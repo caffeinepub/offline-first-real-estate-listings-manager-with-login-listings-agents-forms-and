@@ -1,0 +1,494 @@
+{
+  "kind": "implementation_plan",
+  "version": "1.0",
+  "title": "Offline-first real estate listings manager (frontend-only)",
+  "requirements": [
+    {
+      "id": "REQ-1",
+      "summary": "Add a local, offline-first login landing page with default credentials and protect dashboard routes behind an auth guard.",
+      "acceptanceCriteria": [
+        "When opening the app, the first screen is a login page.",
+        "Entering the default credentials successfully navigates to the dashboard.",
+        "Unauthenticated users cannot access dashboard routes (direct URL navigation redirects to login).",
+        "Login failures show an English error message."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "create",
+          "description": "Create the app shell with routing that defaults to the Login screen and wires protected routes (Dashboard and all post-login pages) behind an auth guard."
+        },
+        {
+          "path": "frontend/src/auth/authStore.ts",
+          "operation": "create",
+          "description": "Implement local-only authentication state and credential verification (default username \"Vivid@Btm\" and password \"123456\") backed by browser storage for offline use."
+        },
+        {
+          "path": "frontend/src/auth/AuthProvider.tsx",
+          "operation": "create",
+          "description": "Create an auth provider/context exposing login/logout, auth status, and persisted credentials; ensures no network dependency for login."
+        },
+        {
+          "path": "frontend/src/auth/RequireAuth.tsx",
+          "operation": "create",
+          "description": "Create a route-guard component that redirects unauthenticated users to the Login page (including direct URL navigation)."
+        },
+        {
+          "path": "frontend/src/pages/LoginPage.tsx",
+          "operation": "create",
+          "description": "Create the landing Login page with username/password inputs, a submit action, and English error messages on failure. Use shadcn-ui form/input/button components for consistent UI. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/AppHeader.tsx",
+          "operation": "create",
+          "description": "Create a simple header used on authenticated screens with a Logout action and space for global status (e.g., offline indicator). Use shadcn-ui button components. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-2",
+      "summary": "Add a Settings area in the dashboard to change and persist the app’s local login credentials.",
+      "acceptanceCriteria": [
+        "Dashboard contains a Settings section/page with fields to update username and password.",
+        "After saving new credentials, logging out and logging back in requires the updated credentials.",
+        "Credentials persist across page refreshes and browser restarts on the same machine/browser profile."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/SettingsPage.tsx",
+          "operation": "create",
+          "description": "Create a Settings page reachable from the dashboard navigation with fields to update username and password and an English save confirmation/error. Use shadcn-ui form/input/button components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/auth/authStore.ts",
+          "operation": "modify",
+          "description": "Add persisted credential update + retrieval logic (e.g., localStorage) so subsequent logins use updated values."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire the Settings page route under authenticated routes and add navigation entry from the dashboard/layout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-3",
+      "summary": "Persist all app data locally in the browser (including attachments) so core CRUD works offline and survives restarts.",
+      "acceptanceCriteria": [
+        "With the network disconnected, users can create, search, view, and edit records without errors.",
+        "Data remains available after refresh and after closing/reopening the browser.",
+        "Uploaded images/videos/documents are retained and can be re-opened/downloaded while offline."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/storage/localDb.ts",
+          "operation": "create",
+          "description": "Implement an IndexedDB-based local persistence layer for records (properties, customers/buyers/sellers, agents, notes/links where used) and attachment blobs, designed to work with no network connectivity."
+        },
+        {
+          "path": "frontend/src/storage/attachments.ts",
+          "operation": "create",
+          "description": "Implement attachment ingestion (File -> stored blob), stable attachment IDs, and download/open helpers that work offline (e.g., object URL from stored bytes)."
+        },
+        {
+          "path": "frontend/src/storage/recordRepository.ts",
+          "operation": "create",
+          "description": "Create a repository abstraction for CRUD over all record categories and unified metadata needed by search and details views."
+        },
+        {
+          "path": "frontend/src/hooks/useLocalRepository.ts",
+          "operation": "create",
+          "description": "Provide React hooks to interact with the local repository (create/update/list/get) and keep UI reactive without network dependency."
+        }
+      ]
+    },
+    {
+      "id": "REQ-4",
+      "summary": "Enable Excel-compatible export/import (CSV acceptable) for all stored data with merge/replace options and clear feedback.",
+      "acceptanceCriteria": [
+        "A user can export data and receive one or more downloaded files that can be opened in Excel.",
+        "A user can import an exported file and restore records into the app.",
+        "Import shows clear success/failure feedback in English and does not corrupt existing data (e.g., supports replace vs merge choice)."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/importExport/csvFormat.ts",
+          "operation": "create",
+          "description": "Define CSV-compatible import/export formats for each record category and attachments metadata (excluding raw blob bytes from CSV; export attachments as separate downloads or a secondary JSON metadata file if needed)."
+        },
+        {
+          "path": "frontend/src/features/importExport/exportAll.ts",
+          "operation": "create",
+          "description": "Implement export flow that downloads Excel-openable CSV files for all categories and includes an English success message in the UI."
+        },
+        {
+          "path": "frontend/src/features/importExport/importAll.ts",
+          "operation": "create",
+          "description": "Implement import flow that parses previously exported files, validates data, and supports user choice between merge vs replace with English success/failure feedback."
+        },
+        {
+          "path": "frontend/src/pages/SettingsPage.tsx",
+          "operation": "modify",
+          "description": "Add an Import/Export section in Settings with actions for export and import, including merge/replace selection. Use shadcn-ui dialog/select/toast components as appropriate. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-5",
+      "summary": "Create the post-login dashboard with property search, property-type selector (including Add Custom), and primary actions for New Entry and Agent List.",
+      "acceptanceCriteria": [
+        "Dashboard shows a search input labeled in English (e.g., \"Search properties\").",
+        "Dashboard shows the specified selector options and an \"Add Custom\" option.",
+        "Dashboard shows buttons/links for \"New Entry\" and \"Agent List\" that navigate to their respective screens."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "create",
+          "description": "Create the Dashboard page UI with an English-labeled search bar, a property-type selector containing the required options (Commercial Land, House, Agriculture Land, Flat, Shops, Rental, Add Custom), and primary navigation actions for New Entry and Agent List. Use shadcn-ui input/select/button components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire Dashboard as the post-login default route and ensure New Entry and Agent List navigation routes are registered."
+        }
+      ]
+    },
+    {
+      "id": "REQ-6",
+      "summary": "Implement New Entry workflow with category selection and category-specific forms that save locally and are retrievable via search and details views.",
+      "acceptanceCriteria": [
+        "New Entry allows selecting at least: Customer, Commercial Land, House, Agriculture Land, Flat, Shops, Rental, and Custom.",
+        "Submitting a form creates a saved record with a stable ID and viewable details screen.",
+        "Saved entries appear in search results and can be opened for viewing."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/NewEntryPage.tsx",
+          "operation": "create",
+          "description": "Create a New Entry page that lets users choose a category (Customer, Commercial Land, House, Agriculture Land, Flat, Shops, Rental, Custom) and routes to the correct form."
+        },
+        {
+          "path": "frontend/src/forms/FormRegistry.ts",
+          "operation": "create",
+          "description": "Create a registry that maps category -> form component, default values, and record-type metadata used by save, search, and details."
+        },
+        {
+          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "operation": "create",
+          "description": "Create a unified record details view that can render saved fields and attachments for any category; supports opening from search results and Top Priority lists."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Register New Entry and Record Details routes and ensure they are protected by the auth guard."
+        }
+      ]
+    },
+    {
+      "id": "REQ-7",
+      "summary": "Implement Customer form with Sold/Available status toggle (red vs green accents) and required fields, persisted and shown in details.",
+      "acceptanceCriteria": [
+        "Customer form includes all specified fields and saves them to the record.",
+        "Status toggle persists on the saved record and is shown on the details view.",
+        "Sold status uses a red theme accent on the form; Available uses a green theme accent."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/forms/CustomerForm.tsx",
+          "operation": "create",
+          "description": "Create the Customer entry form with Sold/Available toggle and fields Full Name, Address, Contact, Need, Budget, Area, and Custom Requirements/Notes; apply red/green accent styling based on status. Use shadcn-ui form controls. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/forms/FormRegistry.ts",
+          "operation": "modify",
+          "description": "Register Customer form category and define which fields are indexed for search and shown in list summaries."
+        },
+        {
+          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "operation": "modify",
+          "description": "Render Customer record fields and display status (Sold/Available) consistently with the red/green accents."
+        }
+      ]
+    },
+    {
+      "id": "REQ-8",
+      "summary": "Implement Commercial Land form with required fields, offline-retained attachments with custom filenames, and a clickable Google Maps location link.",
+      "acceptanceCriteria": [
+        "Commercial Land form includes all specified fields and saves them.",
+        "User can add multiple attachments (images/videos/documents) and assign a custom name to each attachment.",
+        "Attachments can be downloaded/opened after saving (including offline).",
+        "Location map link is rendered as a clickable URL; when clicked online it opens Google Maps in a new tab/window."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/forms/CommercialLandForm.tsx",
+          "operation": "create",
+          "description": "Create the Commercial Land form with fields Owner Name, Contact, Address, Land Area, Negotiable Price, Facing, Road, Mukh Size, Lambai, Nagarpalika, Notes, and Location map link; include multi-attachment upload with user-provided custom filenames. Use shadcn-ui inputs/textareas. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/AttachmentPicker.tsx",
+          "operation": "create",
+          "description": "Create a reusable attachment picker that supports selecting multiple files, setting a custom display filename per file, and handing off to local attachment storage for offline retention. Use shadcn-ui input/button components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "operation": "modify",
+          "description": "Render Commercial Land details including attachments (open/download) and location URL as a clickable link that opens in a new tab when online."
+        },
+        {
+          "path": "frontend/src/forms/FormRegistry.ts",
+          "operation": "modify",
+          "description": "Register Commercial Land category and define search/index fields (ownerName, contact, address, propertyType/category)."
+        }
+      ]
+    },
+    {
+      "id": "REQ-9",
+      "summary": "Implement House form with required fields and offline-retained photo/video/document attachments; searchable and viewable in details.",
+      "acceptanceCriteria": [
+        "House form includes all specified fields and saves them.",
+        "User can attach photos/videos/documents and re-open/download them after saving.",
+        "House records are searchable and viewable in a detail view."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/forms/HouseForm.tsx",
+          "operation": "create",
+          "description": "Create the House form with fields Owner Name, Contact, Location, Built Year, Total Floor, Rooms, Total Land Area, Naksa Pass, Price, Facing, Notes, and attachment upload (photos/video/documents) persisted locally. Use shadcn-ui form controls. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/forms/FormRegistry.ts",
+          "operation": "modify",
+          "description": "Register House category and define which fields participate in unified search."
+        },
+        {
+          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "operation": "modify",
+          "description": "Render House record details including attachments (open/download) and key fields."
+        }
+      ]
+    },
+    {
+      "id": "REQ-10",
+      "summary": "Create Agent List page with Add New Agent form (including citizenship upload) and a list of saved agents with viewable details.",
+      "acceptanceCriteria": [
+        "Agent List page has an Add New Agent form with all specified fields including a file upload for citizenship.",
+        "Submitting creates a saved agent record shown in the list below.",
+        "Each listed agent can be opened to view details including the uploaded file."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/pages/AgentListPage.tsx",
+          "operation": "create",
+          "description": "Create Agent List page with an Add New Agent form at the top (Name, Address, Contact, Work Area, Citizenship upload) and a list below of saved agents. Use shadcn-ui form components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/AgentDetailsPage.tsx",
+          "operation": "create",
+          "description": "Create an Agent details page to view agent fields and open/download the uploaded citizenship file offline."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Wire Agent List and Agent Details routes (protected) and ensure Dashboard action \"Agent List\" navigates to AgentListPage."
+        },
+        {
+          "path": "frontend/src/storage/recordRepository.ts",
+          "operation": "modify",
+          "description": "Add agent-specific CRUD helpers using the local DB, including storage/retrieval of the citizenship attachment reference."
+        }
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "summary": "Add a dashboard Top Priority section showing 20 buyers and 20 sellers with key fields and View Detail actions.",
+      "acceptanceCriteria": [
+        "Dashboard shows two lists/columns: Buyers and Sellers, each limited to 20 items.",
+        "Each item shows Name, Property Type, Budget, and a View Detail action.",
+        "View Detail opens the stored record in a read-only details view (or edit-capable form view) displaying all saved fields."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/topPriority/topPriority.ts",
+          "operation": "create",
+          "description": "Implement logic to select and return up to 20 buyer and 20 seller records from locally stored Customer records (or applicable categories), including Name, Property Type, and Budget."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Add Top Priority Buyers/Sellers lists (two columns) limited to 20 items each, with View Detail buttons that navigate to the unified Record Details page. Use shadcn-ui table/list/button components. Verify the component's usage instructions before implementing."
+        }
+      ]
+    },
+    {
+      "id": "REQ-12",
+      "summary": "Apply a consistent, distinct app theme across screens (no blue/purple primary) with English UI text.",
+      "acceptanceCriteria": [
+        "All primary screens share a consistent visual system (buttons, inputs, headings, spacing).",
+        "Primary palette is not blue/purple.",
+        "UI text is in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/index.css",
+          "operation": "create",
+          "description": "Add global styling and Tailwind/shadcn-ui theme CSS variables to establish a consistent visual system with a non-blue/non-purple primary palette (e.g., green/earth tones) and consistent typography/spacing."
+        },
+        {
+          "path": "frontend/tailwind.config.js",
+          "operation": "modify",
+          "description": "Adjust theme tokens/extended colors as needed to align with the new primary palette and ensure consistent styling across components."
+        },
+        {
+          "path": "frontend/src/components/AppLayout.tsx",
+          "operation": "create",
+          "description": "Create a shared layout wrapper (header, content container, consistent spacing) used by all authenticated pages. Use shadcn-ui layout primitives where appropriate. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Apply AppLayout to authenticated routes so dashboard, forms, and lists share the same consistent layout."
+        }
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "summary": "Add basic PWA/offline app-shell caching and show an English offline indicator when the browser is offline.",
+      "acceptanceCriteria": [
+        "After first load, reloading the app while offline still shows the UI and local data.",
+        "An offline/online indicator is shown somewhere in the UI in English."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/public/manifest.webmanifest",
+          "operation": "create",
+          "description": "Create a PWA manifest that references the generated icons and sets appropriate app name/theme colors in English."
+        },
+        {
+          "path": "frontend/public/sw.js",
+          "operation": "create",
+          "description": "Create a service worker implementing app-shell caching so the UI can load offline after the first visit."
+        },
+        {
+          "path": "frontend/src/pwa/registerServiceWorker.ts",
+          "operation": "create",
+          "description": "Add a small helper to register the service worker on app startup and report registration failures to console without breaking the app."
+        },
+        {
+          "path": "frontend/src/main.tsx",
+          "operation": "modify",
+          "description": "Register the service worker during startup (non-blocking) to enable offline app-shell behavior."
+        },
+        {
+          "path": "frontend/src/hooks/useOnlineStatus.ts",
+          "operation": "create",
+          "description": "Create a hook that tracks online/offline status using browser events so UI can show an English indicator."
+        },
+        {
+          "path": "frontend/src/components/OfflineBanner.tsx",
+          "operation": "create",
+          "description": "Create an English offline/online indicator banner/chip to be displayed in the authenticated layout/header. Use shadcn-ui alert/badge styling. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/components/AppHeader.tsx",
+          "operation": "modify",
+          "description": "Wire OfflineBanner into the header so it is visible somewhere in the UI."
+        }
+      ]
+    },
+    {
+      "id": "REQ-14",
+      "summary": "Add placeholder, end-to-end usable forms for Agriculture Land, Flat, Shops, Rental, and Custom categories with attachments and notes.",
+      "acceptanceCriteria": [
+        "Each listed category has a working New Entry form and produces a saved record.",
+        "Each placeholder form supports notes and attachments and can be viewed after saving.",
+        "Records from these categories appear in search results."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/forms/OtherCategoryForm.tsx",
+          "operation": "create",
+          "description": "Create a reusable placeholder form used for Agriculture Land, Flat, Shops, Rental, and Custom that captures title/name, contact, location/address, price/budget, notes, and attachments, saving locally. Use shadcn-ui form controls. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/forms/FormRegistry.ts",
+          "operation": "modify",
+          "description": "Register Agriculture Land, Flat, Shops, Rental, and Custom categories to use the placeholder form and ensure they are included in search indexing."
+        },
+        {
+          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "operation": "modify",
+          "description": "Ensure details view can render placeholder category records and open/download their attachments offline."
+        }
+      ]
+    },
+    {
+      "id": "REQ-15",
+      "summary": "Implement unified offline search across saved records by key fields and allow opening details from results.",
+      "acceptanceCriteria": [
+        "Typing in the search bar filters results without requiring network access.",
+        "Search matches at least name, contact, and address/location fields.",
+        "Clicking a result opens the correct record details view."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/features/search/searchIndex.ts",
+          "operation": "create",
+          "description": "Implement a unified local search utility that indexes key fields across record categories (name/title, contact, address/location, property type/category) and returns ranked/filtered results offline."
+        },
+        {
+          "path": "frontend/src/components/SearchResultsList.tsx",
+          "operation": "create",
+          "description": "Create a reusable search results list component that displays matching records and supports clicking to open the unified details view. Use shadcn-ui list/button components. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/pages/DashboardPage.tsx",
+          "operation": "modify",
+          "description": "Wire the dashboard search bar to the unified search and render results below; clicking a result navigates to the correct Record Details route."
+        },
+        {
+          "path": "frontend/src/App.tsx",
+          "operation": "modify",
+          "description": "Ensure the Record Details route accepts record identifiers and category metadata required to open the correct record from search results."
+        }
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "summary": "Add a visible local-vs-canister storage mode switch (default local-only) and wire canister mode to backend actor functions for saving and retrieving records.",
+      "acceptanceCriteria": [
+        "App provides a visible setting indicating current storage mode.",
+        "In local-only mode, all CRUD actions work offline and do not require backend calls.",
+        "In canister mode, created records are saved and retrievable from the backend actor."
+      ],
+      "file_operations": [
+        {
+          "path": "frontend/src/storage/storageMode.ts",
+          "operation": "create",
+          "description": "Implement persisted storage-mode state (local-only default; optional canister mode) stored in browser storage and exposed via a small API/hook."
+        },
+        {
+          "path": "frontend/src/hooks/useStorageMode.ts",
+          "operation": "create",
+          "description": "Create a hook to read/update current storage mode and to allow UI to display current mode and switch modes."
+        },
+        {
+          "path": "frontend/src/storage/canisterRepository.ts",
+          "operation": "create",
+          "description": "Create a repository implementation that uses the backend actor interface to save/fetch records and uploads attachments via blob-storage ExternalBlob when in canister mode. Verify the component's usage instructions before implementing."
+        },
+        {
+          "path": "frontend/src/storage/recordRepository.ts",
+          "operation": "modify",
+          "description": "Update the repository abstraction to delegate operations to either localDb or canisterRepository based on current storage mode, ensuring local-only mode never requires network calls."
+        },
+        {
+          "path": "frontend/src/pages/SettingsPage.tsx",
+          "operation": "modify",
+          "description": "Add a visible storage mode switch (Local-only vs Canister) with clear English explanatory text and current-mode indicator. Use shadcn-ui select/radio components. Verify the component's usage instructions before implementing."
+        }
+      ]
+    }
+  ]
+}

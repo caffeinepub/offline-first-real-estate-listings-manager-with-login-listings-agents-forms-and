@@ -1,0 +1,105 @@
+{
+  "kind": "spec_vs_diff_report",
+  "version": "1.0",
+  "generatedAt": "2026-02-12T20:43:51.114Z",
+  "summary": "Diff adds a TanStack Router-based authenticated app shell, localStorage-backed credential auth, offline/online indicator, local (browser) repository hooks, and several entry forms (Customer, Commercial Land, House, other categories) with attachment picking/renaming. Backend/main.mo adds canister-side models and file upload/storage with access control mixins. However, several requested capabilities are not evidenced in the provided diff summary (notably Excel import/export, PWA app-shell caching, Top Priority dashboard lists, and a visible local-vs-canister storage mode switch with canister CRUD wiring).",
+  "missing_requirements": [
+    {
+      "id": "REQ-4",
+      "requirement": "Provide Excel-compatible data interchange: allow exporting all stored data to downloadable Excel-compatible files (CSV or XLSX-compatible structure) and importing previously exported files back into the app.",
+      "reason": "No export/import UI, CSV generation/parsing, download/upload flows, or replace-vs-merge import handling are shown in the diff summary.",
+      "evidence": [
+        "frontend/src/App.tsx",
+        "frontend/src/hooks/useLocalRepository.ts"
+      ]
+    },
+    {
+      "id": "REQ-11",
+      "requirement": "Add a dashboard section that displays a \"Top Priority\" list of 20 buyers and 20 sellers with Name, Property Type, Budget, and a \"View Detail\" button.",
+      "reason": "Dashboard implementation details are not shown, and no component/feature for Top Priority buyers/sellers lists appears in the diff summary.",
+      "evidence": [
+        "frontend/src/App.tsx"
+      ]
+    },
+    {
+      "id": "REQ-13",
+      "requirement": "Add basic PWA/offline support so the app loads while offline after first visit (app shell caching) and provides an English offline indicator/banner when the browser is offline.",
+      "reason": "An offline/online UI badge exists, but no service worker, caching setup, or manifest-related implementation is evidenced in the diff summary.",
+      "evidence": [
+        "frontend/src/components/OfflineBanner.tsx",
+        "frontend/src/hooks/useOnlineStatus.ts"
+      ]
+    },
+    {
+      "id": "REQ-16",
+      "requirement": "Store all records and attachments in the backend canister as a secondary persistence option and provide a clear local-vs-canister storage mode switch (default to local-only).",
+      "reason": "A storage mode hook exists, and backend includes storage/file APIs, but the diff summary does not show any UI control that displays/switches modes or any repository layer that performs CRUD to the canister when in canister mode.",
+      "evidence": [
+        "frontend/src/hooks/useStorageMode.ts",
+        "backend/main.mo",
+        "frontend/src/hooks/useLocalRepository.ts"
+      ]
+    }
+  ],
+  "hallucinated_features": [
+    {
+      "description": "Internet Identity authentication provider and related actor/identity wiring.",
+      "reason": "BuildRequest explicitly states third-party auth providers are non-goals and Internet Identity is not required; diff adds InternetIdentityProvider and useInternetIdentity-based actor creation.",
+      "evidence": [
+        "frontend/src/main.tsx",
+        "frontend/src/hooks/useInternetIdentity.ts",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    },
+    {
+      "description": "Canister-side access control/authorization system initialization and admin token initialization path.",
+      "reason": "Not requested; requirements focus on single-user local login (frontend) and optional canister persistence mode, but diff introduces authorization mixins and admin-token-based initialization logic.",
+      "evidence": [
+        "backend/main.mo",
+        "frontend/src/hooks/useActor.ts"
+      ]
+    }
+  ],
+  "confidence": 0.74,
+  "changed_files": [
+    "all_files_summary.json",
+    "backend/main.mo",
+    "frontend-file-summaries.txt",
+    "frontend/index.css",
+    "frontend/index.html",
+    "frontend/public/manifest.webmanifest",
+    "frontend/public/sw.js",
+    "frontend/src/App.tsx",
+    "frontend/src/auth/AuthProvider.tsx",
+    "frontend/src/auth/authStore.ts",
+    "frontend/src/components/AppHeader.tsx",
+    "frontend/src/components/AppLayout.tsx",
+    "frontend/src/components/AttachmentPicker.tsx",
+    "frontend/src/components/OfflineBanner.tsx",
+    "frontend/src/features/search/searchIndex.ts",
+    "frontend/src/forms/CommercialLandForm.tsx",
+    "frontend/src/forms/CustomerForm.tsx",
+    "frontend/src/forms/HouseForm.tsx",
+    "frontend/src/forms/OtherCategoryForm.tsx",
+    "frontend/src/hooks/useActor.ts",
+    "frontend/src/hooks/useInternetIdentity.ts",
+    "frontend/src/hooks/useLocalRepository.ts",
+    "frontend/src/hooks/useOnlineStatus.ts",
+    "frontend/src/hooks/useStorageMode.ts",
+    "frontend/src/index.css",
+    "frontend/src/main.tsx",
+    "frontend/src/pages/AgentDetailsPage.tsx",
+    "frontend/src/pages/AgentListPage.tsx",
+    "frontend/src/pages/DashboardPage.tsx",
+    "frontend/src/pages/LoginPage.tsx",
+    "frontend/src/pages/NewEntryPage.tsx",
+    "frontend/src/pages/RecordDetailsPage.tsx",
+    "frontend/src/pages/SettingsPage.tsx",
+    "frontend/src/pwa/registerServiceWorker.ts",
+    "frontend/src/storage/localDb.ts",
+    "frontend/src/storage/storageMode.ts",
+    "frontend/src/utils/urlParams.ts",
+    "frontend/tailwind.config.js",
+    "project_state.json"
+  ]
+}
