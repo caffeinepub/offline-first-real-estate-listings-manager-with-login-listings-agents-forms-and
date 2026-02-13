@@ -1,335 +1,117 @@
 {
   "kind": "build_request",
-  "title": "Offline-first real estate listings manager with login, listings/agents forms, and Excel import/export",
+  "title": "Customer category filtering, buyer–seller matching alerts, and button-driven reminder creation (offline local storage + Excel I/O)",
   "priority": "normal",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Implement an offline-first single-user authentication flow with a landing page login using default credentials username \"Vivid@Btm\" and password \"123456\", and require login to access the dashboard.",
+      "text": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2"
         ],
         "quotes": [
-          "The landing page should have a default login username: Vivid@Btm and password: 123456"
+          "On customer page change the ‘need’ to Category (Land, House, rental etc show the properties list)",
+          "1. Yes"
         ]
       },
       "acceptanceCriteria": [
-        "When opening the app, the first screen is a login page.",
-        "Entering the default credentials successfully navigates to the dashboard.",
-        "Unauthenticated users cannot access dashboard routes (direct URL navigation redirects to login).",
-        "Login failures show an English error message."
+        "CustomerForm shows a dropdown labeled “Category” instead of an input labeled “Need”.",
+        "Saving a customer stores the selected category value on the record (and existing records that only have `need` still display a category value via fallback mapping).",
+        "CustomerListPage displays “Category: …” (not “Need: …”) when category is present."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "Add a dashboard settings area that allows changing the login username and password used by the app (replacing the defaults) and persists the updated credentials for subsequent logins.",
+      "text": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2"
         ],
         "quotes": [
-          "(should be able to change it when needed in dashboard.)"
+          "On customer page change the ‘need’ to Category (Land, House, rental etc show the properties list)"
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard contains a Settings section/page with fields to update username and password.",
-        "After saving new credentials, logging out and logging back in requires the updated credentials.",
-        "Credentials persist across page refreshes and browser restarts on the same machine/browser profile."
+        "When viewing a Customer record in RecordDetailsPage, a “Matching Properties” (or equivalent) section appears.",
+        "The list only includes non-customer records whose category matches the customer’s selected Category (and excludes Sold properties unless explicitly required elsewhere).",
+        "Each listed property links to its record details page."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Persist all application data locally in the browser for offline use (properties, customers/buyers/sellers, agents, notes, links, and uploaded files) with no dependency on network connectivity for core CRUD operations.",
-      "target": "both",
+      "text": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
+      "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2"
         ],
         "quotes": [
-          "Let's build a offline webapp",
-          "The data should use the PC drive to store.",
-          "the app should keep all the data in a excel on backend on computer drive"
+          "On excel try to match the buyer and sellers requirements if price categories and few other matches then automatically show on the dashboard, user will dismiss after viewing."
         ]
       },
       "acceptanceCriteria": [
-        "With the network disconnected, users can create, search, view, and edit records without errors.",
-        "Data remains available after refresh and after closing/reopening the browser.",
-        "Uploaded images/videos/documents are retained and can be re-opened/downloaded while offline."
+        "Dashboard shows a dedicated “Matches” section listing candidate buyer↔property pairs.",
+        "Matches are computed automatically from locally stored records without manual user action.",
+        "Each match entry includes at least: buyer name/contact, buyer category/budget, property title/owner + price, and quick links to both records.",
+        "A dismissed match no longer appears after dismissal and stays dismissed after refresh/reload (persisted locally)."
       ]
     },
     {
       "id": "REQ-4",
-      "text": "Provide Excel-compatible data interchange: allow exporting all stored data to downloadable Excel-compatible files (CSV or XLSX-compatible structure) and importing previously exported files back into the app.",
+      "text": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
       "target": "frontend",
       "source": {
         "messageIds": [
           "msg-2"
         ],
         "quotes": [
-          "the app should keep all the data in a excel on backend on computer drive"
+          "The remainder should work on button press, when clicked add remainder then only it should open to select date time and notes.",
+          "3. Yes"
         ]
       },
       "acceptanceCriteria": [
-        "A user can export data and receive one or more downloaded files that can be opened in Excel.",
-        "A user can import an exported file and restore records into the app.",
-        "Import shows clear success/failure feedback in English and does not corrupt existing data (e.g., supports replace vs merge choice)."
+        "Dashboard’s reminder UI does not show date/time/note inputs by default.",
+        "Clicking “Add Reminder” opens a modal (or expands a panel) where the user can enter note, date, and time.",
+        "Submitting saves the reminder using the existing reminder storage flow and clears/closed the UI.",
+        "Due reminders still trigger the existing ReminderModal behavior."
       ]
     },
     {
       "id": "REQ-5",
-      "text": "Create the post-login dashboard page with (1) a property search bar, (2) a property-type selector containing: Commercial Land, House, Agriculture Land, Flat, Shops, Rental, and Add Custom, and (3) primary actions for \"New Entry\" and \"Agent List\".",
+      "text": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "msg-6"
         ],
         "quotes": [
-          "After the login the dashboard page: it should have the search Properties search bar, and select options ( Commercial Land, House, Agriculture Land, Flat, Shops, Rental and Add Custom.",
-          "And buttons 1. New Entry",
-          "2. Agent List"
+          "No I was this application to use the excel to create its database for the necessary forms and enteries done on the application.",
+          "This is a offline application so all the data should be saved on local pc drive, on settings users should select the drive folder to save all files and data of the application. Data’s should be saved on excel."
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard shows a search input labeled in English (e.g., \"Search properties\").",
-        "Dashboard shows the specified selector options and an \"Add Custom\" option.",
-        "Dashboard shows buttons/links for \"New Entry\" and \"Agent List\" that navigate to their respective screens."
-      ]
-    },
-    {
-      "id": "REQ-6",
-      "text": "Implement the \"New Entry\" workflow with category selection and category-specific forms, saving each entry locally and making it retrievable via search and view screens.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "New Entry (select category: Customer{Form: ...}. Commercial Land{Form:...}. House{Form:...}. Agriculture Land, Flat, Shops, Rental and Add Custom)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "New Entry allows selecting at least: Customer, Commercial Land, House, Agriculture Land, Flat, Shops, Rental, and Custom.",
-        "Submitting a form creates a saved record with a stable ID and viewable details screen.",
-        "Saved entries appear in search results and can be opened for viewing."
-      ]
-    },
-    {
-      "id": "REQ-7",
-      "text": "Implement the Customer entry form with a Sold/Available toggle that visually indicates status (Sold uses red accents; Available uses green accents) and includes fields: Full Name, Address, Contact, Need, Budget, Area, and Custom Requirements/Notes.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Customer{Form: At the top Option Button( Sold(Form color Red) & Available(form color Green)) Full Name, Address, Contact, need:, Budget,Area, custom Requirements( space to write notes)"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Customer form includes all specified fields and saves them to the record.",
-        "Status toggle persists on the saved record and is shown on the details view.",
-        "Sold status uses a red theme accent on the form; Available uses a green theme accent."
-      ]
-    },
-    {
-      "id": "REQ-8",
-      "text": "Implement the Commercial Land entry form with fields: Owner Name, Contact, Address, Land Area, Negotiable Price, Facing, Road, Mukh Size, Lambai, Nagarpalika, Notes; support attaching Images/Videos/Documents with user-provided custom filenames; and include a Location map link that is clickable and opens in Google Maps when internet is available.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Commercial Land{Form:Owner Name, Contact, Address,Land Area, Negotiable Price, Facing , Road,Mukh Size,Lambai, Nagarpalika, Add Notes, Upload Images, Videos, Documents with custom Name (should be saved on PC drive), Location map link(Clickable and open on Google map if internet available)."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Commercial Land form includes all specified fields and saves them.",
-        "User can add multiple attachments (images/videos/documents) and assign a custom name to each attachment.",
-        "Attachments can be downloaded/opened after saving (including offline).",
-        "Location map link is rendered as a clickable URL; when clicked online it opens Google Maps in a new tab/window."
-      ]
-    },
-    {
-      "id": "REQ-9",
-      "text": "Implement the House entry form with fields: Owner Name, Contact, Location, Built Year, Total Floor, Rooms, Total Land Area, Naksa Pass, Price, Facing, Notes; and support attaching photos, video, and documents with persistent storage.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "House{Form: Owner Name:,Contact, location, Built Year, Total Floor,Rooms,Total Land Area, Naksa Pass, Price, Facing,Notes. Upload photos, video and documents"
-        ]
-      },
-      "acceptanceCriteria": [
-        "House form includes all specified fields and saves them.",
-        "User can attach photos/videos/documents and re-open/download them after saving.",
-        "House records are searchable and viewable in a detail view."
-      ]
-    },
-    {
-      "id": "REQ-10",
-      "text": "Implement the Agent List page: show an \"Add New Agent\" form at the top with fields Name, Address, Contact, Work Area, and Citizenship upload; and list saved agents below with the ability to open/view an agent’s details.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Agent List ( this button page should have add New agent option(Name, Address,Contact, Work Area, Citizensship upload ) at the top and below there should be list of saved agents details."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Agent List page has an Add New Agent form with all specified fields including a file upload for citizenship.",
-        "Submitting creates a saved agent record shown in the list below.",
-        "Each listed agent can be opened to view details including the uploaded file."
-      ]
-    },
-    {
-      "id": "REQ-11",
-      "text": "Add a dashboard section that displays a \"Top Priority\" list of 20 buyers and 20 sellers showing Name, Property Type, Budget, and a \"View Detail\" button for each item that opens the saved buyer/seller record and displays it.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "below those button on dashboard there should be a top priority 20 buyer and seller list ( Name, Property Type, Budget and View Detail button on each side seller & Buyer which should open the saved buyer or seller form and display ."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard shows two lists/columns: Buyers and Sellers, each limited to 20 items.",
-        "Each item shows Name, Property Type, Budget, and a View Detail action.",
-        "View Detail opens the stored record in a read-only details view (or edit-capable form view) displaying all saved fields."
-      ]
-    },
-    {
-      "id": "REQ-12",
-      "text": "Create a coherent, distinct visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across login, dashboard, forms, and lists. Do not use blue/purple as the primary palette.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Let's build a offline webapp ... real estate listings details"
-        ]
-      },
-      "acceptanceCriteria": [
-        "All primary screens share a consistent visual system (buttons, inputs, headings, spacing).",
-        "Primary palette is not blue/purple.",
-        "UI text is in English."
-      ]
-    },
-    {
-      "id": "REQ-13",
-      "text": "Add basic PWA/offline support so the app loads while offline after first visit (app shell caching) and provides an English offline indicator/banner when the browser is offline.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Let's build a offline webapp"
-        ]
-      },
-      "acceptanceCriteria": [
-        "After first load, reloading the app while offline still shows the UI and local data.",
-        "An offline/online indicator is shown somewhere in the UI in English."
-      ]
-    },
-    {
-      "id": "REQ-14",
-      "text": "Create placeholder forms for Agriculture Land, Flat, Shops, Rental, and Custom categories that at minimum allow saving a title/name, contact, location/address, price/budget, notes, and attachments, so these categories are usable end-to-end even before full field parity is added.",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "Agriculture Land, Flat, Shops, Rental and Add Custom"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Each listed category has a working New Entry form and produces a saved record.",
-        "Each placeholder form supports notes and attachments and can be viewed after saving.",
-        "Records from these categories appear in search results."
-      ]
-    },
-    {
-      "id": "REQ-15",
-      "text": "Implement a unified search experience that searches across saved property/listing records (including customers/buyers/sellers where applicable) by key fields such as name, contact, address/location, and property type, and allows opening a matching record from results.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "dashboard page: it should have the search Properties search bar"
-        ]
-      },
-      "acceptanceCriteria": [
-        "Typing in the search bar filters results without requiring network access.",
-        "Search matches at least name, contact, and address/location fields.",
-        "Clicking a result opens the correct record details view."
-      ]
-    },
-    {
-      "id": "REQ-16",
-      "text": "Store all records and attachments in the backend canister as a secondary persistence option and provide a clear local-vs-canister storage mode switch (default to local-only for offline usage).",
-      "target": "both",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "offline webapp",
-          "data should use the PC drive to store"
-        ]
-      },
-      "acceptanceCriteria": [
-        "App provides a visible setting indicating current storage mode.",
-        "In local-only mode, all CRUD actions work offline and do not require backend calls.",
-        "In canister mode, created records are saved and retrievable from the backend actor."
+        "Settings page provides Export to Excel and Import from Excel actions in addition to (or replacing) JSON export/import.",
+        "Export generates an .xlsx file containing the app’s locally stored data (at minimum: records and agents; include other stores if present such as reminders and deals).",
+        "Import accepts an .xlsx file and restores data into local storage (IndexedDB) with validation and error handling (user-visible error messages in English).",
+        "The feature uses browser file pickers for import/export (no silent filesystem writes)."
       ]
     }
   ],
   "constraints": [
-    "Use English for all user-facing text.",
-    "Frontend must not modify files in frontend immutablePaths (compose read-only UI components rather than editing them).",
-    "Backend must remain a single Motoko actor (all logic in backend/main.mo); add migration.mo only if upgrading existing state becomes necessary.",
-    "Direct write-access to arbitrary PC drive paths is not available from a standard web app; implement local persistence using browser storage and file download/export mechanisms to place Excel/media on disk."
+    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui (immutable paths).",
+    "The app cannot create folders or automatically write to a user-selected local drive/folder; any Excel usage must be via user-driven file import/export through the browser.",
+    "Keep all backend logic in the existing single Motoko actor (backend/main.mo) if backend changes are introduced; only add backend changes if strictly required for these features."
   ],
   "nonGoals": [
-    "Integrations with third-party authentication providers (use only the app’s local login as requested; Internet Identity is not required).",
-    "Real-time collaboration, multi-user sync, or WebSocket-based updates.",
-    "Cloud backups or external databases/filesystems (no AWS/GDrive/Dropbox).",
-    "Guaranteed native Excel .xlsx generation if it requires unsupported libraries; CSV export/import is acceptable as Excel-compatible interchange unless otherwise specified."
+    "Building a desktop application or implementing true OS-level offline storage to arbitrary local folders/drives.",
+    "Automatic background syncing to Excel files without user download/upload interaction.",
+    "Adding real-time networking features (e.g., WebSockets) for matches or reminders."
   ],
   "imageRequirements": {
-    "required": [
-      "Minimal real estate app logo mark (app-logo.dim_512x512.png)",
-      "PWA app icon (app-icon.dim_192x192.png)",
-      "PWA app icon (app-icon.dim_512x512.png)"
-    ],
+    "required": [],
     "edits": []
-  },
-  "userProfileUpdate": {
-    "goalsToAdd": [
-      "Build an offline-first web app to manage real estate listings, agents, and buyer/seller records with local persistence and Excel-compatible export/import."
-    ],
-    "goalsToRemove": [],
-    "preferencesToAdd": [
-      "Use English for user-facing UI text."
-    ],
-    "preferencesToRemove": [],
-    "miscToAdd": [],
-    "miscToRemove": [],
-    "fieldsToSet": {},
-    "fieldsToDelete": []
   }
 }

@@ -1,5 +1,5 @@
 import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet, redirect } from '@tanstack/react-router';
-import { useAuth } from './auth/AuthProvider';
+import { AuthProvider, useAuth } from './auth/AuthProvider';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import NewEntryPage from './pages/NewEntryPage';
@@ -7,6 +7,9 @@ import RecordDetailsPage from './pages/RecordDetailsPage';
 import AgentListPage from './pages/AgentListPage';
 import AgentDetailsPage from './pages/AgentDetailsPage';
 import SettingsPage from './pages/SettingsPage';
+import CustomerListPage from './pages/CustomerListPage';
+import SoldListPage from './pages/SoldListPage';
+import DealPage from './pages/DealPage';
 import AppLayout from './components/AppLayout';
 
 const rootRoute = createRootRoute({
@@ -66,6 +69,24 @@ const settingsRoute = createRoute({
   component: SettingsPage
 });
 
+const customerListRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/customers',
+  component: CustomerListPage
+});
+
+const soldListRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/sold',
+  component: SoldListPage
+});
+
+const dealRoute = createRoute({
+  getParentRoute: () => layoutRoute,
+  path: '/deal',
+  component: DealPage
+});
+
 const routeTree = rootRoute.addChildren([
   loginRoute,
   layoutRoute.addChildren([
@@ -74,7 +95,10 @@ const routeTree = rootRoute.addChildren([
     recordDetailsRoute,
     agentListRoute,
     agentDetailsRoute,
-    settingsRoute
+    settingsRoute,
+    customerListRoute,
+    soldListRoute,
+    dealRoute
   ])
 ]);
 
@@ -90,8 +114,15 @@ declare module '@tanstack/react-router' {
   }
 }
 
-export default function App() {
+function AppRouter() {
   const { isAuthenticated } = useAuth();
-
   return <RouterProvider router={router} context={{ isAuthenticated }} />;
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppRouter />
+    </AuthProvider>
+  );
 }

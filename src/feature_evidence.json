@@ -2,14 +2,12 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-implement-an-offline-first-single-user-authentication-flow-with-a-landing-page-login-using-default-credentials-username-vivid-btm-and-password-123456-and-require-login-to-access-the-dashboard",
-      "featureTitle": "Implement an offline-first single-user authentication flow with a landing page login using default credentials username \"Vivid@Btm\" and password \"123456\", and require login to access the dashboard.",
+      "featureId": "feature-update-the-customer-buyer-form-and-customer-list-ui-to-replace-the-field-labeled-need-with-a-category-dropdown-e-g-land-house-rental-etc-and-persist-the-selected-category-on-the-customer-record-while-preserving-backward-compatibility-with-previously-saved-records-that-used-the-need-field",
+      "featureTitle": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/auth/AuthProvider.tsx",
-        "frontend/src/auth/authStore.ts",
-        "frontend/src/components/AppHeader.tsx",
-        "frontend/src/pages/LoginPage.tsx"
+        "frontend/src/forms/CustomerForm.tsx",
+        "frontend/src/pages/CustomerListPage.tsx",
+        "frontend/src/utils/customerCategory.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -26,12 +24,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-add-a-dashboard-settings-area-that-allows-changing-the-login-username-and-password-used-by-the-app-replacing-the-defaults-and-persists-the-updated-credentials-for-subsequent-logins",
-      "featureTitle": "Add a dashboard settings area that allows changing the login username and password used by the app (replacing the defaults) and persists the updated credentials for subsequent logins.",
+      "featureId": "feature-on-the-customer-record-details-page-display-a-filtered-list-of-property-records-based-on-the-customer-s-selected-category-e-g-land-house-rental-etc-so-the-user-can-view-relevant-properties-for-that-customer",
+      "featureTitle": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/auth/authStore.ts",
-        "frontend/src/pages/SettingsPage.tsx"
+        "frontend/src/hooks/useLocalRepository.ts",
+        "frontend/src/pages/RecordDetailsPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -48,11 +45,12 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-persist-all-application-data-locally-in-the-browser-for-offline-use-properties-customers-buyers-sellers-agents-notes-links-and-uploaded-files-with-no-dependency-on-network-connectivity-for-core-crud-operations",
-      "featureTitle": "Persist all application data locally in the browser for offline use (properties, customers/buyers/sellers, agents, notes, links, and uploaded files) with no dependency on network connectivity for core CRUD operations.",
+      "featureId": "feature-implement-automated-buyer-seller-matching-and-show-matches-as-dismissible-items-on-the-dashboard-compare-customer-buyer-records-against-non-customer-seller-property-records-using-price-budget-category-and-a-small-set-of-additional-comparable-fields-and-keep-showing-newly-found-matches-until-the-user-dismisses-them",
+      "featureTitle": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
       "files": [
-        "frontend/src/hooks/useLocalRepository.ts",
-        "frontend/src/storage/localDb.ts"
+        "frontend/src/features/matching/dismissedMatchesStore.ts",
+        "frontend/src/features/matching/matchEngine.ts",
+        "frontend/src/pages/DashboardPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -69,10 +67,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-provide-excel-compatible-data-interchange-allow-exporting-all-stored-data-to-downloadable-excel-compatible-files-csv-or-xlsx-compatible-structure-and-importing-previously-exported-files-back-into-the-app",
-      "featureTitle": "Provide Excel-compatible data interchange: allow exporting all stored data to downloadable Excel-compatible files (CSV or XLSX-compatible structure) and importing previously exported files back into the app.",
+      "featureId": "feature-change-reminder-creation-so-date-time-notes-entry-only-appears-after-the-user-clicks-an-add-reminder-button-after-saving-the-reminder-is-stored-and-will-trigger-the-existing-due-reminder-modal-at-the-specified-date-time",
+      "featureTitle": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
       "files": [
-        "frontend/src/pages/SettingsPage.tsx"
+        "frontend/src/components/AddReminderDialog.tsx",
+        "frontend/src/pages/DashboardPage.tsx"
       ],
       "components": [
         "authorization@4.0.0",
@@ -89,11 +88,11 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-create-the-post-login-dashboard-page-with-1-a-property-search-bar-2-a-property-type-selector-containing-commercial-land-house-agriculture-land-flat-shops-rental-and-add-custom-and-3-primary-actions-for-new-entry-and-agent-list",
-      "featureTitle": "Create the post-login dashboard page with (1) a property search bar, (2) a property-type selector containing: Commercial Land, House, Agriculture Land, Flat, Shops, Rental, and Add Custom, and (3) primary actions for \"New Entry\" and \"Agent List\".",
+      "featureId": "feature-add-excel-based-import-export-for-the-local-offline-database-in-settings-so-users-can-use-excel-files-as-the-primary-data-interchange-format-instead-of-only-json-export-import",
+      "featureTitle": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
       "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/DashboardPage.tsx"
+        "frontend/src/pages/SettingsPage.tsx",
+        "frontend/src/utils/excelIo.ts"
       ],
       "components": [
         "authorization@4.0.0",
@@ -106,248 +105,6 @@
       ],
       "testIds": [
         "REQ-5"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-the-new-entry-workflow-with-category-selection-and-category-specific-forms-saving-each-entry-locally-and-making-it-retrievable-via-search-and-view-screens",
-      "featureTitle": "Implement the \"New Entry\" workflow with category selection and category-specific forms, saving each entry locally and making it retrievable via search and view screens.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/NewEntryPage.tsx",
-        "frontend/src/pages/RecordDetailsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-6"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-the-customer-entry-form-with-a-sold-available-toggle-that-visually-indicates-status-sold-uses-red-accents-available-uses-green-accents-and-includes-fields-full-name-address-contact-need-budget-area-and-custom-requirements-notes",
-      "featureTitle": "Implement the Customer entry form with a Sold/Available toggle that visually indicates status (Sold uses red accents; Available uses green accents) and includes fields: Full Name, Address, Contact, Need, Budget, Area, and Custom Requirements/Notes.",
-      "files": [
-        "frontend/src/forms/CustomerForm.tsx",
-        "frontend/src/pages/RecordDetailsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-7"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-the-commercial-land-entry-form-with-fields-owner-name-contact-address-land-area-negotiable-price-facing-road-mukh-size-lambai-nagarpalika-notes-support-attaching-images-videos-documents-with-user-provided-custom-filenames-and-include-a-location-map-link-that-is-clickable-and-opens-in-google-maps-when-internet-is-available",
-      "featureTitle": "Implement the Commercial Land entry form with fields: Owner Name, Contact, Address, Land Area, Negotiable Price, Facing, Road, Mukh Size, Lambai, Nagarpalika, Notes; support attaching Images/Videos/Documents with user-provided custom filenames; and include a Location map link that is clickable and opens in Google Maps when internet is available.",
-      "files": [
-        "frontend/src/components/AttachmentPicker.tsx",
-        "frontend/src/forms/CommercialLandForm.tsx",
-        "frontend/src/pages/RecordDetailsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-8"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-the-house-entry-form-with-fields-owner-name-contact-location-built-year-total-floor-rooms-total-land-area-naksa-pass-price-facing-notes-and-support-attaching-photos-video-and-documents-with-persistent-storage",
-      "featureTitle": "Implement the House entry form with fields: Owner Name, Contact, Location, Built Year, Total Floor, Rooms, Total Land Area, Naksa Pass, Price, Facing, Notes; and support attaching photos, video, and documents with persistent storage.",
-      "files": [
-        "frontend/src/forms/HouseForm.tsx",
-        "frontend/src/pages/RecordDetailsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-9"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-the-agent-list-page-show-an-add-new-agent-form-at-the-top-with-fields-name-address-contact-work-area-and-citizenship-upload-and-list-saved-agents-below-with-the-ability-to-open-view-an-agent-s-details",
-      "featureTitle": "Implement the Agent List page: show an \"Add New Agent\" form at the top with fields Name, Address, Contact, Work Area, and Citizenship upload; and list saved agents below with the ability to open/view an agent’s details.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/pages/AgentDetailsPage.tsx",
-        "frontend/src/pages/AgentListPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-10"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-a-dashboard-section-that-displays-a-top-priority-list-of-20-buyers-and-20-sellers-showing-name-property-type-budget-and-a-view-detail-button-for-each-item-that-opens-the-saved-buyer-seller-record-and-displays-it",
-      "featureTitle": "Add a dashboard section that displays a \"Top Priority\" list of 20 buyers and 20 sellers showing Name, Property Type, Budget, and a \"View Detail\" button for each item that opens the saved buyer/seller record and displays it.",
-      "files": [
-        "frontend/src/pages/DashboardPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-11"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-a-coherent-distinct-visual-theme-for-the-app-colors-typography-spacing-and-layout-and-apply-it-consistently-across-login-dashboard-forms-and-lists-do-not-use-blue-purple-as-the-primary-palette",
-      "featureTitle": "Create a coherent, distinct visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across login, dashboard, forms, and lists. Do not use blue/purple as the primary palette.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/components/AppLayout.tsx",
-        "frontend/src/index.css",
-        "frontend/tailwind.config.js"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-12"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-basic-pwa-offline-support-so-the-app-loads-while-offline-after-first-visit-app-shell-caching-and-provides-an-english-offline-indicator-banner-when-the-browser-is-offline",
-      "featureTitle": "Add basic PWA/offline support so the app loads while offline after first visit (app shell caching) and provides an English offline indicator/banner when the browser is offline.",
-      "files": [
-        "frontend/public/manifest.webmanifest",
-        "frontend/public/sw.js",
-        "frontend/src/components/AppHeader.tsx",
-        "frontend/src/components/OfflineBanner.tsx",
-        "frontend/src/hooks/useOnlineStatus.ts",
-        "frontend/src/main.tsx",
-        "frontend/src/pwa/registerServiceWorker.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-13"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-create-placeholder-forms-for-agriculture-land-flat-shops-rental-and-custom-categories-that-at-minimum-allow-saving-a-title-name-contact-location-address-price-budget-notes-and-attachments-so-these-categories-are-usable-end-to-end-even-before-full-field-parity-is-added",
-      "featureTitle": "Create placeholder forms for Agriculture Land, Flat, Shops, Rental, and Custom categories that at minimum allow saving a title/name, contact, location/address, price/budget, notes, and attachments, so these categories are usable end-to-end even before full field parity is added.",
-      "files": [
-        "frontend/src/forms/OtherCategoryForm.tsx",
-        "frontend/src/pages/RecordDetailsPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-14"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-a-unified-search-experience-that-searches-across-saved-property-listing-records-including-customers-buyers-sellers-where-applicable-by-key-fields-such-as-name-contact-address-location-and-property-type-and-allows-opening-a-matching-record-from-results",
-      "featureTitle": "Implement a unified search experience that searches across saved property/listing records (including customers/buyers/sellers where applicable) by key fields such as name, contact, address/location, and property type, and allows opening a matching record from results.",
-      "files": [
-        "frontend/src/App.tsx",
-        "frontend/src/features/search/searchIndex.ts",
-        "frontend/src/pages/DashboardPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-15"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-store-all-records-and-attachments-in-the-backend-canister-as-a-secondary-persistence-option-and-provide-a-clear-local-vs-canister-storage-mode-switch-default-to-local-only-for-offline-usage",
-      "featureTitle": "Store all records and attachments in the backend canister as a secondary persistence option and provide a clear local-vs-canister storage mode switch (default to local-only for offline usage).",
-      "files": [
-        "frontend/src/hooks/useStorageMode.ts",
-        "frontend/src/pages/SettingsPage.tsx",
-        "frontend/src/storage/storageMode.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-16"
       ],
       "confidence": "high"
     }

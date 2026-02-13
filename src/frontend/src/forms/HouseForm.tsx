@@ -4,27 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AttachmentPicker from '../components/AttachmentPicker';
 import { toast } from 'sonner';
 
 interface HouseFormProps {
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export default function HouseForm({ onSuccess }: HouseFormProps) {
+export default function HouseForm({ onSuccess, initialData }: HouseFormProps) {
+  const [status, setStatus] = useState<string>(initialData?.status || 'Available');
   const [formData, setFormData] = useState({
-    ownerName: '',
-    contact: '',
-    location: '',
-    builtYear: '',
-    totalFloor: '',
-    rooms: '',
-    totalLandArea: '',
-    naksaPass: '',
-    price: '',
-    facing: '',
-    notes: ''
+    ownerName: initialData?.ownerName || '',
+    contact: initialData?.contact || '',
+    location: initialData?.location || '',
+    builtYear: initialData?.builtYear || '',
+    totalFloor: initialData?.totalFloor || '',
+    rooms: initialData?.rooms || '',
+    totalLandArea: initialData?.totalLandArea || '',
+    naksaPass: initialData?.naksaPass || '',
+    price: initialData?.price || '',
+    facing: initialData?.facing || '',
+    notes: initialData?.notes || '',
+    locationUrl: initialData?.locationUrl || ''
   });
   const [attachments, setAttachments] = useState<Array<{ id: string; fileName: string; file: File }>>([]);
 
@@ -34,7 +38,7 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const recordId = `house-${Date.now()}`;
+    const recordId = initialData?.id || `house-${Date.now()}`;
     
     try {
       const attachmentIds = await Promise.all(
@@ -53,9 +57,13 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
       const record = {
         id: recordId,
         category: 'House',
+        status,
         ...formData,
-        attachmentIds,
-        createdAt: Date.now()
+        attachmentIds: initialData?.attachmentIds 
+          ? [...initialData.attachmentIds, ...attachmentIds]
+          : attachmentIds,
+        starred: initialData?.starred || false,
+        createdAt: initialData?.createdAt || Date.now()
       };
 
       await saveRecord.mutateAsync(record);
@@ -70,8 +78,21 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>House</CardTitle>
-        <CardDescription>Add residential house details</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>House</CardTitle>
+            <CardDescription>Add residential house details</CardDescription>
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Available">Available</SelectItem>
+              <SelectItem value="Sold">Sold</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -161,7 +182,7 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
               <Label htmlFor="price">Price</Label>
               <Input
                 id="price"
-                placeholder="e.g., 75 Lakhs"
+                placeholder="e.g., 1 Crore"
                 value={formData.price}
                 onChange={(e) => setFormData({ ...formData, price: e.target.value })}
               />
@@ -178,6 +199,17 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="locationUrl">Location Map Link</Label>
+            <Input
+              id="locationUrl"
+              type="url"
+              placeholder="https://maps.google.com/..."
+              value={formData.locationUrl}
+              onChange={(e) => setFormData({ ...formData, locationUrl: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
             <Textarea
               id="notes"
@@ -187,11 +219,11 @@ export default function HouseForm({ onSuccess }: HouseFormProps) {
             />
           </div>
 
-          <AttachmentPicker attachments={attachments} onChange={setAttachments} />
+          {!initialData && <AttachmentPicker attachments={attachments} onChange={setAttachments} />}
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={saveRecord.isPending} className="flex-1">
-              {saveRecord.isPending ? 'Saving...' : 'Save House'}
+              {saveRecord.isPending ? 'Saving...' : initialData ? 'Update House' : 'Save House'}
             </Button>
           </div>
         </form>

@@ -9,11 +9,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
+import { exportToExcel, importFromExcel } from '../utils/excelIo';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { mode, setMode } = useStorageMode();
   const [credentials, setCredentialsState] = useState(() => getCredentials());
+  const [isImporting, setIsImporting] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handleSaveCredentials = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,15 +24,19 @@ export default function SettingsPage() {
     toast.success('Login credentials updated successfully! Please log in again with new credentials.');
   };
 
-  const handleExport = async () => {
+  const handleExportJSON = async () => {
     try {
-      const { getAllRecords, getAllAgents } = await import('../storage/localDb');
+      const { getAllRecords, getAllAgents, getAllReminders, getAllDeals } = await import('../storage/localDb');
       const records = await getAllRecords();
       const agents = await getAllAgents();
+      const reminders = await getAllReminders();
+      const deals = await getAllDeals();
       
       const data = {
         records,
         agents,
+        reminders,
+        deals,
         exportedAt: new Date().toISOString()
       };
       
@@ -41,22 +48,42 @@ export default function SettingsPage() {
       a.click();
       URL.revokeObjectURL(url);
       
-      toast.success('Data exported successfully!');
+      toast.success('Data exported to JSON successfully!');
     } catch (error) {
       toast.error('Failed to export data');
       console.error(error);
     }
   };
 
-  const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleExportCSV = async () => {
+    setIsExporting(true);
+    try {
+      const { getAllRecords, getAllAgents, getAllReminders, getAllDeals } = await import('../storage/localDb');
+      const records = await getAllRecords();
+      const agents = await getAllAgents();
+      const reminders = await getAllReminders();
+      const deals = await getAllDeals();
+      
+      await exportToExcel({ records, agents, reminders, deals });
+      toast.success('Data exported to CSV successfully! You can open this file in Excel.');
+    } catch (error) {
+      toast.error('Failed to export to CSV');
+      console.error(error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportJSON = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setIsImporting(true);
     try {
       const text = await file.text();
       const data = JSON.parse(text);
       
-      const { saveRecord, saveAgent } = await import('../storage/localDb');
+      const { saveRecord, saveAgent, saveReminder, saveDeal } = await import('../storage/localDb');
       
       if (data.records) {
         for (const record of data.records) {
@@ -69,12 +96,72 @@ export default function SettingsPage() {
           await saveAgent(agent);
         }
       }
+
+      if (data.reminders) {
+        for (const reminder of data.reminders) {
+          await saveReminder(reminder);
+        }
+      }
+
+      if (data.deals) {
+        for (const deal of data.deals) {
+          await saveDeal(deal);
+        }
+      }
       
-      toast.success('Data imported successfully!');
+      toast.success('Data imported from JSON successfully!');
       window.location.reload();
     } catch (error) {
-      toast.error('Failed to import data. Please check the file format.');
+      toast.error('Failed to import JSON data. Please check the file format.');
       console.error(error);
+    } finally {
+      setIsImporting(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleImportCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsImporting(true);
+    try {
+      const data = await importFromExcel(file);
+      
+      const { saveRecord, saveAgent, saveReminder, saveDeal } = await import('../storage/localDb');
+      
+      if (data.records) {
+        for (const record of data.records) {
+          await saveRecord(record);
+        }
+      }
+      
+      if (data.agents) {
+        for (const agent of data.agents) {
+          await saveAgent(agent);
+        }
+      }
+
+      if (data.reminders) {
+        for (const reminder of data.reminders) {
+          await saveReminder(reminder);
+        }
+      }
+
+      if (data.deals) {
+        for (const deal of data.deals) {
+          await saveDeal(deal);
+        }
+      }
+      
+      toast.success('Data imported from CSV successfully!');
+      window.location.reload();
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to import CSV data. Please check the file format.');
+      console.error(error);
+    } finally {
+      setIsImporting(false);
+      e.target.value = '';
     }
   };
 
@@ -153,29 +240,65 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle>Import / Export Data</CardTitle>
             <CardDescription>
-              Export your data to a file or import previously exported data
+              Export your data to CSV (Excel-compatible) or JSON, or import previously exported data
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex gap-3">
-              <Button onClick={handleExport} variant="outline">
-                Export Data
-              </Button>
+            <div className="space-y-3">
               <div>
-                <Input
-                  type="file"
-                  accept=".json"
-                  onChange={handleImport}
-                  className="hidden"
-                  id="import-file"
-                />
-                <Button variant="outline" onClick={() => document.getElementById('import-file')?.click()}>
-                  Import Data
-                </Button>
+                <h4 className="font-medium mb-2">Export</h4>
+                <div className="flex gap-3">
+                  <Button onClick={handleExportCSV} variant="outline" disabled={isExporting}>
+                    {isExporting ? 'Exporting...' : 'Export to CSV (Excel)'}
+                  </Button>
+                  <Button onClick={handleExportJSON} variant="outline">
+                    Export to JSON
+                  </Button>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-medium mb-2">Import</h4>
+                <div className="flex gap-3">
+                  <div>
+                    <Input
+                      type="file"
+                      accept=".csv"
+                      onChange={handleImportCSV}
+                      className="hidden"
+                      id="import-csv-file"
+                      disabled={isImporting}
+                    />
+                    <Button 
+                      variant="outline" 
+                      onClick={() => document.getElementById('import-csv-file')?.click()}
+                      disabled={isImporting}
+                    >
+                      {isImporting ? 'Importing...' : 'Import from CSV'}
+                    </Button>
+                  </div>
+                  <div>
+                    <Input
+                      type="file"
+                      accept=".json"
+                      onChange={handleImportJSON}
+                      className="hidden"
+                      id="import-json-file"
+                      disabled={isImporting}
+                    />
+                    <Button 
+                      variant="outline" 
+                      onClick={() => document.getElementById('import-json-file')?.click()}
+                      disabled={isImporting}
+                    >
+                      {isImporting ? 'Importing...' : 'Import from JSON'}
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
             <p className="text-sm text-muted-foreground">
-              Export creates a JSON file that can be opened in Excel or imported back into the app.
+              CSV files can be opened in Excel and contain records, agents, reminders, and deals in separate sections. All data is stored locally in your browser.
             </p>
           </CardContent>
         </Card>

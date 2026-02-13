@@ -10,7 +10,7 @@ export default function AppLayout() {
       </main>
       <footer className="border-t mt-12 py-6">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Real Estate Manager. Built with love using{' '}
+          <p>© {new Date().getFullYear()} Vivid Design Tech BTM. Built with love using{' '}
             <a 
               href={`https://caffeine.ai/?utm_source=Caffeine-footer&utm_medium=referral&utm_content=${encodeURIComponent(window.location.hostname)}`}
               target="_blank"

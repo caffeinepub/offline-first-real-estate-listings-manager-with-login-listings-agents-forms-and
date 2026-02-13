@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Building2 } from 'lucide-react';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -29,10 +28,14 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
-            <Building2 className="w-9 h-9 text-white" />
+          <div className="mx-auto">
+            <img 
+              src="/assets/generated/app-logo.dim_512x512.png" 
+              alt="Vivid Design Tech BTM Logo" 
+              className="w-24 h-24 mx-auto object-contain"
+            />
           </div>
-          <CardTitle className="text-3xl font-bold">Real Estate Manager</CardTitle>
+          <CardTitle className="text-3xl font-bold">Vivid Design Tech BTM</CardTitle>
           <CardDescription>Sign in to manage your property listings</CardDescription>
         </CardHeader>
         <CardContent>

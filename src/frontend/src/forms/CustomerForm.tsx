@@ -1,26 +1,36 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSaveRecord } from '../hooks/useLocalRepository';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { CUSTOMER_CATEGORIES, mapNeedToCategory } from '../utils/customerCategory';
 
 interface CustomerFormProps {
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export default function CustomerForm({ onSuccess }: CustomerFormProps) {
-  const [status, setStatus] = useState<'Available' | 'Sold'>('Available');
+export default function CustomerForm({ onSuccess, initialData }: CustomerFormProps) {
+  const [priority, setPriority] = useState<string>(initialData?.priority || 'Less Priority');
+  
+  // Determine initial category: use stored customerCategory, or fallback to mapping from need
+  const initialCategory = initialData?.customerCategory || 
+    (initialData?.need ? mapNeedToCategory(initialData.need) : undefined) || 
+    'Land';
+  
+  const [customerCategory, setCustomerCategory] = useState<string>(initialCategory);
+  
   const [formData, setFormData] = useState({
-    fullName: '',
-    address: '',
-    contact: '',
-    need: '',
-    budget: '',
-    area: '',
-    customRequirements: ''
+    fullName: initialData?.fullName || '',
+    address: initialData?.address || '',
+    contact: initialData?.contact || '',
+    budget: initialData?.budget || '',
+    area: initialData?.area || '',
+    customRequirements: initialData?.customRequirements || ''
   });
 
   const saveRecord = useSaveRecord();
@@ -29,11 +39,13 @@ export default function CustomerForm({ onSuccess }: CustomerFormProps) {
     e.preventDefault();
     
     const record = {
-      id: `customer-${Date.now()}`,
+      id: initialData?.id || `customer-${Date.now()}`,
       category: 'Customer',
-      status,
+      priority,
+      customerCategory,
       ...formData,
-      createdAt: Date.now()
+      starred: initialData?.starred || false,
+      createdAt: initialData?.createdAt || Date.now()
     };
 
     try {
@@ -46,36 +58,11 @@ export default function CustomerForm({ onSuccess }: CustomerFormProps) {
     }
   };
 
-  const bgColor = status === 'Sold' ? 'bg-red-50 dark:bg-red-950/20' : 'bg-green-50 dark:bg-green-950/20';
-  const borderColor = status === 'Sold' ? 'border-red-200 dark:border-red-800' : 'border-green-200 dark:border-green-800';
-
   return (
-    <Card className={`${bgColor} ${borderColor}`}>
+    <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>Customer / Buyer Information</CardTitle>
-            <CardDescription>Add customer or buyer details</CardDescription>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant={status === 'Available' ? 'default' : 'outline'}
-              onClick={() => setStatus('Available')}
-              className={status === 'Available' ? 'bg-green-600 hover:bg-green-700' : ''}
-            >
-              Available
-            </Button>
-            <Button
-              type="button"
-              variant={status === 'Sold' ? 'default' : 'outline'}
-              onClick={() => setStatus('Sold')}
-              className={status === 'Sold' ? 'bg-red-600 hover:bg-red-700' : ''}
-            >
-              Sold
-            </Button>
-          </div>
-        </div>
+        <CardTitle>Customer / Buyer Information</CardTitle>
+        <CardDescription>Add customer or buyer details</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -109,15 +96,33 @@ export default function CustomerForm({ onSuccess }: CustomerFormProps) {
             />
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="priority">Priority *</Label>
+            <Select value={priority} onValueChange={setPriority}>
+              <SelectTrigger id="priority">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Confirm Buyer">Confirm Buyer</SelectItem>
+                <SelectItem value="Less Priority">Less Priority</SelectItem>
+                <SelectItem value="Hawa">Hawa</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="need">Need</Label>
-              <Input
-                id="need"
-                placeholder="e.g., 2BHK Flat"
-                value={formData.need}
-                onChange={(e) => setFormData({ ...formData, need: e.target.value })}
-              />
+              <Label htmlFor="customerCategory">Category *</Label>
+              <Select value={customerCategory} onValueChange={setCustomerCategory}>
+                <SelectTrigger id="customerCategory">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {CUSTOMER_CATEGORIES.map(cat => (
+                    <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="budget">Budget</Label>
@@ -152,7 +157,7 @@ export default function CustomerForm({ onSuccess }: CustomerFormProps) {
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={saveRecord.isPending} className="flex-1">
-              {saveRecord.isPending ? 'Saving...' : 'Save Customer'}
+              {saveRecord.isPending ? 'Saving...' : initialData ? 'Update Customer' : 'Save Customer'}
             </Button>
           </div>
         </form>

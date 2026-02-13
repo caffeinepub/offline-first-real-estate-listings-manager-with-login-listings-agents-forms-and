@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AttachmentPicker from '../components/AttachmentPicker';
 import { toast } from 'sonner';
@@ -11,15 +12,18 @@ import { toast } from 'sonner';
 interface OtherCategoryFormProps {
   category: string;
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export default function OtherCategoryForm({ category, onSuccess }: OtherCategoryFormProps) {
+export default function OtherCategoryForm({ category, onSuccess, initialData }: OtherCategoryFormProps) {
+  const [status, setStatus] = useState<string>(initialData?.status || 'Available');
   const [formData, setFormData] = useState({
-    title: '',
-    contact: '',
-    location: '',
-    price: '',
-    notes: ''
+    title: initialData?.title || '',
+    contact: initialData?.contact || '',
+    location: initialData?.location || '',
+    price: initialData?.price || '',
+    notes: initialData?.notes || '',
+    locationUrl: initialData?.locationUrl || ''
   });
   const [attachments, setAttachments] = useState<Array<{ id: string; fileName: string; file: File }>>([]);
 
@@ -29,7 +33,7 @@ export default function OtherCategoryForm({ category, onSuccess }: OtherCategory
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const recordId = `${category.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
+    const recordId = initialData?.id || `${category.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}`;
     
     try {
       const attachmentIds = await Promise.all(
@@ -48,9 +52,13 @@ export default function OtherCategoryForm({ category, onSuccess }: OtherCategory
       const record = {
         id: recordId,
         category,
+        status,
         ...formData,
-        attachmentIds,
-        createdAt: Date.now()
+        attachmentIds: initialData?.attachmentIds 
+          ? [...initialData.attachmentIds, ...attachmentIds]
+          : attachmentIds,
+        starred: initialData?.starred || false,
+        createdAt: initialData?.createdAt || Date.now()
       };
 
       await saveRecord.mutateAsync(record);
@@ -65,8 +73,21 @@ export default function OtherCategoryForm({ category, onSuccess }: OtherCategory
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{category}</CardTitle>
-        <CardDescription>Add {category.toLowerCase()} property details</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>{category}</CardTitle>
+            <CardDescription>Add {category.toLowerCase()} property details</CardDescription>
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Available">Available</SelectItem>
+              <SelectItem value="Sold">Sold</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -111,6 +132,17 @@ export default function OtherCategoryForm({ category, onSuccess }: OtherCategory
           </div>
 
           <div className="space-y-2">
+            <Label htmlFor="locationUrl">Location Map Link</Label>
+            <Input
+              id="locationUrl"
+              type="url"
+              placeholder="https://maps.google.com/..."
+              value={formData.locationUrl}
+              onChange={(e) => setFormData({ ...formData, locationUrl: e.target.value })}
+            />
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
             <Textarea
               id="notes"
@@ -120,11 +152,11 @@ export default function OtherCategoryForm({ category, onSuccess }: OtherCategory
             />
           </div>
 
-          <AttachmentPicker attachments={attachments} onChange={setAttachments} />
+          {!initialData && <AttachmentPicker attachments={attachments} onChange={setAttachments} />}
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={saveRecord.isPending} className="flex-1">
-              {saveRecord.isPending ? 'Saving...' : `Save ${category}`}
+              {saveRecord.isPending ? 'Saving...' : initialData ? `Update ${category}` : `Save ${category}`}
             </Button>
           </div>
         </form>

@@ -1,8 +1,8 @@
 export function searchRecords(records: any[], query: string): any[] {
-  if (!query.trim()) return records;
-
-  const lowerQuery = query.toLowerCase();
+  const lowerQuery = query.trim().toLowerCase();
   
+  if (!lowerQuery) return [];
+
   return records.filter(record => {
     const searchableFields = [
       record.ownerName,

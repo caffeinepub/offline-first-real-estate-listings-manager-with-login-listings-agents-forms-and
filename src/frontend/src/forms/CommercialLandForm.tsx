@@ -4,28 +4,31 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import AttachmentPicker from '../components/AttachmentPicker';
 import { toast } from 'sonner';
 
 interface CommercialLandFormProps {
   onSuccess: () => void;
+  initialData?: any;
 }
 
-export default function CommercialLandForm({ onSuccess }: CommercialLandFormProps) {
+export default function CommercialLandForm({ onSuccess, initialData }: CommercialLandFormProps) {
+  const [status, setStatus] = useState<string>(initialData?.status || 'Available');
   const [formData, setFormData] = useState({
-    ownerName: '',
-    contact: '',
-    address: '',
-    landArea: '',
-    price: '',
-    facing: '',
-    roadInfo: '',
-    mukhSize: '',
-    lambai: '',
-    nagarpalika: '',
-    notes: '',
-    locationUrl: ''
+    ownerName: initialData?.ownerName || '',
+    contact: initialData?.contact || '',
+    address: initialData?.address || '',
+    landArea: initialData?.landArea || '',
+    price: initialData?.price || '',
+    facing: initialData?.facing || '',
+    roadInfo: initialData?.roadInfo || '',
+    mukhSize: initialData?.mukhSize || '',
+    lambai: initialData?.lambai || '',
+    nagarpalika: initialData?.nagarpalika || '',
+    notes: initialData?.notes || '',
+    locationUrl: initialData?.locationUrl || ''
   });
   const [attachments, setAttachments] = useState<Array<{ id: string; fileName: string; file: File }>>([]);
 
@@ -35,10 +38,9 @@ export default function CommercialLandForm({ onSuccess }: CommercialLandFormProp
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const recordId = `commercial-${Date.now()}`;
+    const recordId = initialData?.id || `commercial-${Date.now()}`;
     
     try {
-      // Save attachments
       const attachmentIds = await Promise.all(
         attachments.map(async (att) => {
           const blob = new Blob([await att.file.arrayBuffer()], { type: att.file.type });
@@ -56,9 +58,13 @@ export default function CommercialLandForm({ onSuccess }: CommercialLandFormProp
         id: recordId,
         category: 'Commercial Land',
         propertyType: 'Commercial Land',
+        status,
         ...formData,
-        attachmentIds,
-        createdAt: Date.now()
+        attachmentIds: initialData?.attachmentIds 
+          ? [...initialData.attachmentIds, ...attachmentIds]
+          : attachmentIds,
+        starred: initialData?.starred || false,
+        createdAt: initialData?.createdAt || Date.now()
       };
 
       await saveRecord.mutateAsync(record);
@@ -73,8 +79,21 @@ export default function CommercialLandForm({ onSuccess }: CommercialLandFormProp
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Commercial Land</CardTitle>
-        <CardDescription>Add commercial land property details</CardDescription>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle>Commercial Land</CardTitle>
+            <CardDescription>Add commercial land property details</CardDescription>
+          </div>
+          <Select value={status} onValueChange={setStatus}>
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Available">Available</SelectItem>
+              <SelectItem value="Sold">Sold</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -198,11 +217,11 @@ export default function CommercialLandForm({ onSuccess }: CommercialLandFormProp
             />
           </div>
 
-          <AttachmentPicker attachments={attachments} onChange={setAttachments} />
+          {!initialData && <AttachmentPicker attachments={attachments} onChange={setAttachments} />}
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={saveRecord.isPending} className="flex-1">
-              {saveRecord.isPending ? 'Saving...' : 'Save Commercial Land'}
+              {saveRecord.isPending ? 'Saving...' : initialData ? 'Update Commercial Land' : 'Save Commercial Land'}
             </Button>
           </div>
         </form>

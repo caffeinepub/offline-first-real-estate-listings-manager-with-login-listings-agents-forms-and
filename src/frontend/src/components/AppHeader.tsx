@@ -22,7 +22,7 @@ export default function AppHeader() {
               <Building2 className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold">Real Estate Manager</h1>
+              <h1 className="text-xl font-bold">Vivid Design Tech BTM</h1>
               <p className="text-xs text-muted-foreground">Property Listings</p>
             </div>
           </Link>

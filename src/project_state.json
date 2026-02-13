@@ -1,140 +1,51 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Offline web app for managing real estate listings on a PC, with local-drive storage (including uploads) and Excel-based backend data storage, featuring login, dashboard search/categories, entry forms, agent management, and prioritized buyer/seller lists.",
+  "summary": "Build an offline-first application that uses locally stored Excel files as its primary database, including customer/property management with category filtering, automated buyer–seller matching alerts, and a reminder feature with a button-triggered date/time/notes workflow.",
   "architectural_notes": [
-    "App is intended to function offline with data persisted to local PC drive.",
-    "Backend persistence uses Excel files stored on the computer drive, including references to uploaded media/documents saved on disk."
+    "Application is intended to run offline and persist all data locally on the user's PC using Excel files as the system of record.",
+    "Provide a user-configurable base folder (selected in Settings) for all stored data/documents; app should create/use necessary subfolders."
   ],
   "known_issues": [],
   "isFixRequest": false,
-  "imageRequirements": "## Required Images\n- Minimal real estate app logo mark (app-logo.dim_512x512.png)\n- PWA app icon (app-icon.dim_192x192.png)\n- PWA app icon (app-icon.dim_512x512.png)",
   "existing_features": [
     {
-      "id": "feature-implement-an-offline-first-single-user-authentication-flow-with-a-landing-page-login-using-default-credentials-username-vivid-btm-and-password-123456-and-require-login-to-access-the-dashboard",
-      "title": "Implement an offline-first single-user authentication flow with a landing page login using default credentials username \"Vivid@Btm\" and password \"123456\", and require login to access the dashboard.",
+      "id": "feature-update-the-customer-buyer-form-and-customer-list-ui-to-replace-the-field-labeled-need-with-a-category-dropdown-e-g-land-house-rental-etc-and-persist-the-selected-category-on-the-customer-record-while-preserving-backward-compatibility-with-previously-saved-records-that-used-the-need-field",
+      "title": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-add-a-dashboard-settings-area-that-allows-changing-the-login-username-and-password-used-by-the-app-replacing-the-defaults-and-persists-the-updated-credentials-for-subsequent-logins",
-      "title": "Add a dashboard settings area that allows changing the login username and password used by the app (replacing the defaults) and persists the updated credentials for subsequent logins.",
+      "id": "feature-on-the-customer-record-details-page-display-a-filtered-list-of-property-records-based-on-the-customer-s-selected-category-e-g-land-house-rental-etc-so-the-user-can-view-relevant-properties-for-that-customer",
+      "title": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
       "reqIds": [
         "REQ-2"
       ],
       "version": 1
     },
     {
-      "id": "feature-persist-all-application-data-locally-in-the-browser-for-offline-use-properties-customers-buyers-sellers-agents-notes-links-and-uploaded-files-with-no-dependency-on-network-connectivity-for-core-crud-operations",
-      "title": "Persist all application data locally in the browser for offline use (properties, customers/buyers/sellers, agents, notes, links, and uploaded files) with no dependency on network connectivity for core CRUD operations.",
+      "id": "feature-implement-automated-buyer-seller-matching-and-show-matches-as-dismissible-items-on-the-dashboard-compare-customer-buyer-records-against-non-customer-seller-property-records-using-price-budget-category-and-a-small-set-of-additional-comparable-fields-and-keep-showing-newly-found-matches-until-the-user-dismisses-them",
+      "title": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
       "reqIds": [
         "REQ-3"
       ],
       "version": 1
     },
     {
-      "id": "feature-provide-excel-compatible-data-interchange-allow-exporting-all-stored-data-to-downloadable-excel-compatible-files-csv-or-xlsx-compatible-structure-and-importing-previously-exported-files-back-into-the-app",
-      "title": "Provide Excel-compatible data interchange: allow exporting all stored data to downloadable Excel-compatible files (CSV or XLSX-compatible structure) and importing previously exported files back into the app.",
+      "id": "feature-change-reminder-creation-so-date-time-notes-entry-only-appears-after-the-user-clicks-an-add-reminder-button-after-saving-the-reminder-is-stored-and-will-trigger-the-existing-due-reminder-modal-at-the-specified-date-time",
+      "title": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
       "reqIds": [
         "REQ-4"
       ],
       "version": 1
     },
     {
-      "id": "feature-create-the-post-login-dashboard-page-with-1-a-property-search-bar-2-a-property-type-selector-containing-commercial-land-house-agriculture-land-flat-shops-rental-and-add-custom-and-3-primary-actions-for-new-entry-and-agent-list",
-      "title": "Create the post-login dashboard page with (1) a property search bar, (2) a property-type selector containing: Commercial Land, House, Agriculture Land, Flat, Shops, Rental, and Add Custom, and (3) primary actions for \"New Entry\" and \"Agent List\".",
+      "id": "feature-add-excel-based-import-export-for-the-local-offline-database-in-settings-so-users-can-use-excel-files-as-the-primary-data-interchange-format-instead-of-only-json-export-import",
+      "title": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
       "reqIds": [
         "REQ-5"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-new-entry-workflow-with-category-selection-and-category-specific-forms-saving-each-entry-locally-and-making-it-retrievable-via-search-and-view-screens",
-      "title": "Implement the \"New Entry\" workflow with category selection and category-specific forms, saving each entry locally and making it retrievable via search and view screens.",
-      "reqIds": [
-        "REQ-6"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-customer-entry-form-with-a-sold-available-toggle-that-visually-indicates-status-sold-uses-red-accents-available-uses-green-accents-and-includes-fields-full-name-address-contact-need-budget-area-and-custom-requirements-notes",
-      "title": "Implement the Customer entry form with a Sold/Available toggle that visually indicates status (Sold uses red accents; Available uses green accents) and includes fields: Full Name, Address, Contact, Need, Budget, Area, and Custom Requirements/Notes.",
-      "reqIds": [
-        "REQ-7"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-commercial-land-entry-form-with-fields-owner-name-contact-address-land-area-negotiable-price-facing-road-mukh-size-lambai-nagarpalika-notes-support-attaching-images-videos-documents-with-user-provided-custom-filenames-and-include-a-location-map-link-that-is-clickable-and-opens-in-google-maps-when-internet-is-available",
-      "title": "Implement the Commercial Land entry form with fields: Owner Name, Contact, Address, Land Area, Negotiable Price, Facing, Road, Mukh Size, Lambai, Nagarpalika, Notes; support attaching Images/Videos/Documents with user-provided custom filenames; and include a Location map link that is clickable and opens in Google Maps when internet is available.",
-      "reqIds": [
-        "REQ-8"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-house-entry-form-with-fields-owner-name-contact-location-built-year-total-floor-rooms-total-land-area-naksa-pass-price-facing-notes-and-support-attaching-photos-video-and-documents-with-persistent-storage",
-      "title": "Implement the House entry form with fields: Owner Name, Contact, Location, Built Year, Total Floor, Rooms, Total Land Area, Naksa Pass, Price, Facing, Notes; and support attaching photos, video, and documents with persistent storage.",
-      "reqIds": [
-        "REQ-9"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-the-agent-list-page-show-an-add-new-agent-form-at-the-top-with-fields-name-address-contact-work-area-and-citizenship-upload-and-list-saved-agents-below-with-the-ability-to-open-view-an-agent-s-details",
-      "title": "Implement the Agent List page: show an \"Add New Agent\" form at the top with fields Name, Address, Contact, Work Area, and Citizenship upload; and list saved agents below with the ability to open/view an agent’s details.",
-      "reqIds": [
-        "REQ-10"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-a-dashboard-section-that-displays-a-top-priority-list-of-20-buyers-and-20-sellers-showing-name-property-type-budget-and-a-view-detail-button-for-each-item-that-opens-the-saved-buyer-seller-record-and-displays-it",
-      "title": "Add a dashboard section that displays a \"Top Priority\" list of 20 buyers and 20 sellers showing Name, Property Type, Budget, and a \"View Detail\" button for each item that opens the saved buyer/seller record and displays it.",
-      "reqIds": [
-        "REQ-11"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-a-coherent-distinct-visual-theme-for-the-app-colors-typography-spacing-and-layout-and-apply-it-consistently-across-login-dashboard-forms-and-lists-do-not-use-blue-purple-as-the-primary-palette",
-      "title": "Create a coherent, distinct visual theme for the app (colors, typography, spacing, and layout) and apply it consistently across login, dashboard, forms, and lists. Do not use blue/purple as the primary palette.",
-      "reqIds": [
-        "REQ-12"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-basic-pwa-offline-support-so-the-app-loads-while-offline-after-first-visit-app-shell-caching-and-provides-an-english-offline-indicator-banner-when-the-browser-is-offline",
-      "title": "Add basic PWA/offline support so the app loads while offline after first visit (app shell caching) and provides an English offline indicator/banner when the browser is offline.",
-      "reqIds": [
-        "REQ-13"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-create-placeholder-forms-for-agriculture-land-flat-shops-rental-and-custom-categories-that-at-minimum-allow-saving-a-title-name-contact-location-address-price-budget-notes-and-attachments-so-these-categories-are-usable-end-to-end-even-before-full-field-parity-is-added",
-      "title": "Create placeholder forms for Agriculture Land, Flat, Shops, Rental, and Custom categories that at minimum allow saving a title/name, contact, location/address, price/budget, notes, and attachments, so these categories are usable end-to-end even before full field parity is added.",
-      "reqIds": [
-        "REQ-14"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-a-unified-search-experience-that-searches-across-saved-property-listing-records-including-customers-buyers-sellers-where-applicable-by-key-fields-such-as-name-contact-address-location-and-property-type-and-allows-opening-a-matching-record-from-results",
-      "title": "Implement a unified search experience that searches across saved property/listing records (including customers/buyers/sellers where applicable) by key fields such as name, contact, address/location, and property type, and allows opening a matching record from results.",
-      "reqIds": [
-        "REQ-15"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-store-all-records-and-attachments-in-the-backend-canister-as-a-secondary-persistence-option-and-provide-a-clear-local-vs-canister-storage-mode-switch-default-to-local-only-for-offline-usage",
-      "title": "Store all records and attachments in the backend canister as a secondary persistence option and provide a clear local-vs-canister storage mode switch (default to local-only for offline usage).",
-      "reqIds": [
-        "REQ-16"
       ],
       "version": 1
     }
@@ -142,67 +53,36 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Offline web app with local PC-drive storage for all data (including uploaded media/documents)",
+      "summary": "Customer page: rename 'Need' to 'Category' and implement a dropdown (Land/House/Rental/etc.) that filters/displays the relevant property list",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-2",
-      "summary": "Landing page login with default credentials (Vivid@Btm / 123456) and ability to change credentials from dashboard",
+      "summary": "Offline local data persistence: store all app data as Excel files on the user's PC (Excel as the database for forms and entries)",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-3",
-      "summary": "Excel-based backend storage on computer drive for listings, contacts, links, notes, and related data",
+      "summary": "Settings: allow user to select a local drive/folder where the app will create/use folders to store all documents and data files",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-4",
-      "summary": "Post-login dashboard with property search bar and category selector (Commercial Land, House, Agriculture Land, Flat, Shops, Rental, Add Custom)",
+      "summary": "Automated matching: compare buyer and seller requirements (price categories and other criteria) and show matches on the dashboard until dismissed",
       "reqIds": [],
       "status": "pending"
     },
     {
       "id": "AR-5",
-      "summary": "New Entry workflow with category-specific forms including Customer and property types (Commercial Land, House, Agriculture Land, Flat, Shops, Rental, Add Custom)",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-6",
-      "summary": "Customer entry form with Sold/Available toggle (red/green form), and fields: Full Name, Address, Contact, Need, Budget, Area, custom requirements/notes",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-7",
-      "summary": "Commercial Land form with specified fields, notes, uploads (images/videos/documents with custom filenames saved to PC drive), and clickable Google Maps location link",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-8",
-      "summary": "House form with specified fields, notes, and uploads (photos/video/documents) saved to PC drive",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-9",
-      "summary": "Agent List page with add-new-agent form (Name, Address, Contact, Work Area, Citizenship upload) and list of saved agents",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-10",
-      "summary": "Dashboard section showing top priority 20 buyers and sellers with Name, Property Type, Budget and View Detail opening the saved buyer/seller record",
+      "summary": "Reminders: only open date/time/notes selection after clicking an 'Add Reminder' button; save/display reminder after creation",
       "reqIds": [],
       "status": "pending"
     }
   ],
-  "gameProjectType": "none",
-  "projectName": "Offline-first real estate listings manager with login, listings/agents forms, and Excel import/export",
+  "projectName": "Customer category filtering, buyer–seller matching alerts, and button-driven reminder creation (offline local storage + Excel I/O)",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }
