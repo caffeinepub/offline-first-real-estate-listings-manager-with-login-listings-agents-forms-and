@@ -1,51 +1,30 @@
 {
   "schemaVersion": "1.0.0",
   "projectStateVersion": 3,
-  "summary": "Build an offline-first application that uses locally stored Excel files as its primary database, including customer/property management with category filtering, automated buyer–seller matching alerts, and a reminder feature with a button-triggered date/time/notes workflow.",
+  "summary": "ICP canister-based web app being deployed with a working production link; branding update to use the user-provided logo as the main app logo (header + PWA icon).",
   "architectural_notes": [
-    "Application is intended to run offline and persist all data locally on the user's PC using Excel files as the system of record.",
-    "Provide a user-configurable base folder (selected in Settings) for all stored data/documents; app should create/use necessary subfolders."
+    "Deployment links must resolve to an active canister; production URL should be regenerated/redeployed when canister ID is invalid/expired."
   ],
-  "known_issues": [],
-  "isFixRequest": false,
+  "known_issues": [
+    "Current production link returns HTTP 400 'Canister ID Not Resolved'.",
+    "App logo not reflecting the user-provided final logo (needs to be applied to header and PWA icon)."
+  ],
+  "isFixRequest": true,
+  "imageRequirements": "## Edit Images\n- Replace the existing logo artwork with the user-provided IMG_4299-3.jpeg (app-logo.dim_512x512.png > app-logo.dim_512x512.png)\n- Replace the existing app icon artwork with the user-provided IMG_4299-3.jpeg (app-icon.dim_192x192.png > app-icon.dim_192x192.png)\n- Replace the existing app icon artwork with the user-provided IMG_4299-3.jpeg (app-icon.dim_512x512.png > app-icon.dim_512x512.png)",
   "existing_features": [
     {
-      "id": "feature-update-the-customer-buyer-form-and-customer-list-ui-to-replace-the-field-labeled-need-with-a-category-dropdown-e-g-land-house-rental-etc-and-persist-the-selected-category-on-the-customer-record-while-preserving-backward-compatibility-with-previously-saved-records-that-used-the-need-field",
-      "title": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
+      "id": "feature-replace-the-app-s-branding-assets-with-the-user-uploaded-logo-image-img-4299-3-jpeg-by-regenerating-the-static-png-files-used-by-the-ui-and-pwa-so-the-new-logo-appears-in-the-header-browser-favicon-and-installed-pwa-icon",
+      "title": "Replace the app’s branding assets with the user-uploaded logo image (IMG_4299-3.jpeg) by regenerating the static PNG files used by the UI and PWA so the new logo appears in the header, browser favicon, and installed PWA icon.",
       "reqIds": [
         "REQ-1"
       ],
       "version": 1
     },
     {
-      "id": "feature-on-the-customer-record-details-page-display-a-filtered-list-of-property-records-based-on-the-customer-s-selected-category-e-g-land-house-rental-etc-so-the-user-can-view-relevant-properties-for-that-customer",
-      "title": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
+      "id": "feature-force-installed-pwas-and-offline-users-to-receive-the-updated-branding-assets-by-bumping-the-service-worker-cache-version-and-ensuring-the-logo-icon-assets-remain-in-the-precache-list",
+      "title": "Force installed PWAs and offline users to receive the updated branding assets by bumping the service worker cache version and ensuring the logo/icon assets remain in the precache list.",
       "reqIds": [
         "REQ-2"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-implement-automated-buyer-seller-matching-and-show-matches-as-dismissible-items-on-the-dashboard-compare-customer-buyer-records-against-non-customer-seller-property-records-using-price-budget-category-and-a-small-set-of-additional-comparable-fields-and-keep-showing-newly-found-matches-until-the-user-dismisses-them",
-      "title": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
-      "reqIds": [
-        "REQ-3"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-change-reminder-creation-so-date-time-notes-entry-only-appears-after-the-user-clicks-an-add-reminder-button-after-saving-the-reminder-is-stored-and-will-trigger-the-existing-due-reminder-modal-at-the-specified-date-time",
-      "title": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
-      "reqIds": [
-        "REQ-4"
-      ],
-      "version": 1
-    },
-    {
-      "id": "feature-add-excel-based-import-export-for-the-local-offline-database-in-settings-so-users-can-use-excel-files-as-the-primary-data-interchange-format-instead-of-only-json-export-import",
-      "title": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
-      "reqIds": [
-        "REQ-5"
       ],
       "version": 1
     }
@@ -53,36 +32,26 @@
   "new_feature_requests": [
     {
       "id": "AR-1",
-      "summary": "Customer page: rename 'Need' to 'Category' and implement a dropdown (Land/House/Rental/etc.) that filters/displays the relevant property list",
+      "summary": "Fix production link returning 400 'Canister ID Not Resolved' by redeploying/regenerating a valid canister URL",
       "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-2",
-      "summary": "Offline local data persistence: store all app data as Excel files on the user's PC (Excel as the database for forms and entries)",
+      "summary": "Apply uploaded logo as final main app logo including header and PWA icon",
       "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-3",
-      "summary": "Settings: allow user to select a local drive/folder where the app will create/use folders to store all documents and data files",
-      "reqIds": [],
-      "status": "pending"
-    },
-    {
-      "id": "AR-4",
-      "summary": "Automated matching: compare buyer and seller requirements (price categories and other criteria) and show matches on the dashboard until dismissed",
-      "reqIds": [],
-      "status": "pending"
+      "status": "in_progress"
     },
     {
       "id": "AR-5",
-      "summary": "Reminders: only open date/time/notes selection after clicking an 'Add Reminder' button; save/display reminder after creation",
-      "reqIds": [],
+      "summary": "Rebuild and redeploy the application to production to provide a fresh working icp0.io URL that does not return HTTP 400 'Canister ID Not Resolved'.",
+      "reqIds": [
+        "REQ-3"
+      ],
       "status": "pending"
     }
   ],
-  "projectName": "Customer category filtering, buyer–seller matching alerts, and button-driven reminder creation (offline local storage + Excel I/O)",
+  "projectName": "Apply uploaded logo to header + PWA icons and redeploy to fix canister link",
   "clarification_mode": "instant",
   "clarification_rounds": 0
 }

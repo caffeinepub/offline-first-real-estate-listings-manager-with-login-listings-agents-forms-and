@@ -26,17 +26,21 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <Card className="w-full max-w-md shadow-xl">
-        <CardHeader className="space-y-3 text-center">
-          <div className="mx-auto">
+      <Card className="w-full max-w-md shadow-2xl">
+        <CardHeader className="text-center space-y-4">
+          <div className="flex justify-center">
             <img 
               src="/assets/generated/app-logo.dim_512x512.png" 
               alt="Vivid Design Tech BTM Logo" 
-              className="w-24 h-24 mx-auto object-contain"
+              className="w-32 h-32 object-contain"
             />
           </div>
-          <CardTitle className="text-3xl font-bold">Vivid Design Tech BTM</CardTitle>
-          <CardDescription>Sign in to manage your property listings</CardDescription>
+          <div>
+            <CardTitle className="text-3xl font-bold">Vivid Design Tech BTM</CardTitle>
+            <CardDescription className="text-base mt-2">
+              Property Listings Manager
+            </CardDescription>
+          </div>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -47,8 +51,9 @@ export default function LoginPage() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
+                placeholder="Enter your username"
                 required
+                autoComplete="username"
               />
             </div>
             <div className="space-y-2">
@@ -58,19 +63,21 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
+                placeholder="Enter your password"
                 required
+                autoComplete="current-password"
               />
             </div>
             {error && (
-              <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-                {error}
-              </div>
+              <p className="text-sm text-destructive">{error}</p>
             )}
-            <Button type="submit" className="w-full bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700">
-              Sign In
+            <Button type="submit" className="w-full">
+              Login
             </Button>
           </form>
+          <div className="mt-6 text-center text-sm text-muted-foreground">
+            <p>Works completely offline after first load</p>
+          </div>
         </CardContent>
       </Card>
     </div>

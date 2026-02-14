@@ -1,13 +1,11 @@
 # Specification
 
 ## Summary
-**Goal:** Improve offline workflow by adding customer Category-based filtering, automated buyer–seller matching alerts, button-driven reminder creation, and Excel import/export for locally stored data.
+**Goal:** Update the app branding to use the uploaded logo across the header and PWA assets, and redeploy to restore a working production icp0.io URL.
 
 **Planned changes:**
-- Update Customer/Buyer form and customer list UI to replace “Need” with a “Category” dropdown, while preserving compatibility with existing records that only have `need`.
-- On customer record details, show a “Matching Properties” section that filters property/seller records by the customer’s selected Category and links to each property record.
-- Add a dismissible “Matches” section on the Dashboard that automatically finds and persists buyer↔property match alerts based on budget/price category and other comparable fields.
-- Change reminder creation so reminder inputs appear only after clicking an “Add Reminder” button, then save via the existing reminder flow and continue triggering the existing due-reminder modal.
-- Add Settings actions to Export to Excel and Import from Excel for local offline data (at minimum records and agents; include other local stores if present such as reminders and deals), with validation and user-visible English error messages.
+- Regenerate the static branding PNGs so the header logo, favicon/Apple touch icon, and PWA manifest icons visually match the uploaded logo (IMG_4299-3.jpeg).
+- Bump the service worker cache version and ensure the logo/icon assets remain precached so existing/offline installs receive the updated branding.
+- Rebuild and redeploy to production to produce a fresh icp0.io URL that loads successfully (no HTTP 400 “Canister ID Not Resolved”).
 
-**User-visible outcome:** Users can categorize customers, see category-matched properties per customer, view and dismiss automatic buyer–seller match alerts on the dashboard, create reminders via an “Add Reminder” button flow, and import/export their offline data using Excel files.
+**User-visible outcome:** The app loads on a new working production URL and displays the updated logo in the header, browser tab/favicon, and installed PWA icon (including after cache updates).

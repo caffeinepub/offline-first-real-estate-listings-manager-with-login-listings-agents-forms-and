@@ -4,6 +4,7 @@ import Runtime "mo:core/Runtime";
 import Map "mo:core/Map";
 import Time "mo:core/Time";
 import Nat "mo:core/Nat";
+import Int "mo:core/Int";
 import List "mo:core/List";
 import Text "mo:core/Text";
 import Order "mo:core/Order";
@@ -148,7 +149,20 @@ actor {
   };
 
   public query ({ caller }) func getFile(id : Nat) : async ?File {
-    files.get(id);
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can access files");
+    };
+    let fileOpt = files.get(id);
+    switch (fileOpt) {
+      case (null) { null };
+      case (?file) {
+        // Only admins or the uploader can access files
+        if (not (AccessControl.isAdmin(accessControlState, caller)) and caller != file.uploadedBy) {
+          Runtime.trap("Unauthorized: Only admins or the uploader can access this file");
+        };
+        ?file;
+      };
+    };
   };
 
   public shared ({ caller }) func deleteFile(id : Nat) : async () {
@@ -231,24 +245,39 @@ actor {
     id;
   };
 
-  // Query functions - accessible to all authenticated users including guests
+  // Query functions - require user authentication
   public query ({ caller }) func getProperty(id : Nat) : async ?Property {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view properties");
+    };
     properties.get(id);
   };
 
   public query ({ caller }) func getHouse(id : Nat) : async ?House {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view houses");
+    };
     houses.get(id);
   };
 
   public query ({ caller }) func getAgent(id : Nat) : async ?Agent {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view agents");
+    };
     agents.get(id);
   };
 
   public query ({ caller }) func getOtherProperty(id : Nat) : async ?OtherProperty {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view properties");
+    };
     otherProperties.get(id);
   };
 
   public query ({ caller }) func getAllAgentsSorted() : async [Agent] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view agents");
+    };
     let agentsList = List.empty<Agent>();
 
     for ((id, agent) in agents.entries()) {
@@ -259,6 +288,9 @@ actor {
   };
 
   public query ({ caller }) func getPropertiesByType(propertyType : Text) : async [Property] {
+    if (not (AccessControl.hasPermission(accessControlState, caller, #user))) {
+      Runtime.trap("Unauthorized: Only users can view properties");
+    };
     let filteredProperties = List.empty<Property>();
 
     for ((id, property) in properties.entries()) {

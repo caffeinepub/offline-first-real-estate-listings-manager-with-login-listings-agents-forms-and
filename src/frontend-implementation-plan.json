@@ -1,128 +1,81 @@
 {
   "kind": "implementation_plan",
   "version": "1.0",
-  "title": "Category-based customer filtering, dashboard matches, reminder dialog flow, and Excel import/export",
+  "title": "Update branding assets (header + PWA icons), bump SW cache, and document production redeploy",
   "requirements": [
     {
       "id": "REQ-1",
-      "summary": "Replace Customer “Need” with a “Category” dropdown and persist it while keeping fallback support for legacy `need` values.",
+      "summary": "Replace UI/PWA branding PNG assets with regenerated versions based on the uploaded logo so header, favicon, Apple touch icon, and manifest icons all match.",
       "acceptanceCriteria": [
-        "CustomerForm shows a dropdown labeled “Category” instead of an input labeled “Need”.",
-        "Saving a customer stores the selected category value on the record (and existing records that only have `need` still display a category value via fallback mapping).",
-        "CustomerListPage displays “Category: …” (not “Need: …”) when category is present."
+        "The header logo renders using /assets/generated/app-logo.dim_512x512.png and visually matches the uploaded IMG_4299-3.jpeg.",
+        "The favicon and Apple touch icon reference /assets/generated/app-icon.dim_192x192.png and visually match the uploaded IMG_4299-3.jpeg.",
+        "The web manifest icons (/assets/generated/app-icon.dim_192x192.png and /assets/generated/app-icon.dim_512x512.png) visually match the uploaded IMG_4299-3.jpeg."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/utils/customerCategory.ts",
-          "operation": "create",
-          "description": "Add shared constants and helpers for customer category options plus legacy fallback mapping from `need` → category and category ↔ property-type mapping. (Used by CustomerForm, CustomerListPage, RecordDetailsPage, and matching logic.)"
+          "path": "frontend/public/assets/generated/app-logo.dim_512x512.png",
+          "operation": "modify",
+          "description": "Regenerate/replace this static PNG asset so it visually matches the uploaded logo IMG_4299-3.jpeg (keep the exact filename and dimensions)."
         },
         {
-          "path": "frontend/src/forms/CustomerForm.tsx",
+          "path": "frontend/public/assets/generated/app-icon.dim_192x192.png",
           "operation": "modify",
-          "description": "Update the customer form state and UI to use a “Category” dropdown stored on the record (e.g., `customerCategory`) and to prefill/display a category via legacy `need` fallback when editing older records. Use the shadcn-ui Select component for the dropdown; verify the component's usage instructions before implementing."
+          "description": "Regenerate/replace this static PNG app icon so it visually matches the uploaded logo IMG_4299-3.jpeg (keep the exact filename and dimensions)."
         },
         {
-          "path": "frontend/src/pages/CustomerListPage.tsx",
+          "path": "frontend/public/assets/generated/app-icon.dim_512x512.png",
           "operation": "modify",
-          "description": "Update customer list rendering to show “Category: …” using the stored customer category (with fallback mapping from legacy `need`) and remove “Need: …” display. Ensure the list still works for older customer records without a stored category."
+          "description": "Regenerate/replace this static PNG app icon so it visually matches the uploaded logo IMG_4299-3.jpeg (keep the exact filename and dimensions)."
+        },
+        {
+          "path": "frontend/src/components/AppHeader.tsx",
+          "operation": "modify",
+          "description": "Verify the header continues to reference /assets/generated/app-logo.dim_512x512.png for the logo and adjust any branding metadata (e.g., alt text) if needed without changing UI library sources."
+        },
+        {
+          "path": "frontend/index.html",
+          "operation": "modify",
+          "description": "Verify favicon and Apple touch icon links reference /assets/generated/app-icon.dim_192x192.png and remain correct after asset replacement."
+        },
+        {
+          "path": "frontend/public/manifest.webmanifest",
+          "operation": "modify",
+          "description": "Verify manifest icon entries continue to reference /assets/generated/app-icon.dim_192x192.png and /assets/generated/app-icon.dim_512x512.png and remain correct after asset replacement."
         }
       ]
     },
     {
       "id": "REQ-2",
-      "summary": "Show a “Matching Properties” section on Customer details that filters properties by the customer’s selected Category.",
+      "summary": "Bump service worker cache version and ensure updated branding assets remain precached so installed PWAs/offline users receive the new logo/icons.",
       "acceptanceCriteria": [
-        "When viewing a Customer record in RecordDetailsPage, a “Matching Properties” (or equivalent) section appears.",
-        "The list only includes non-customer records whose category matches the customer’s selected Category (and excludes Sold properties unless explicitly required elsewhere).",
-        "Each listed property links to its record details page."
+        "The service worker cache version is incremented so existing clients do not keep using the old cached logo/icon assets.",
+        "/assets/generated/app-logo.dim_512x512.png, /assets/generated/app-icon.dim_192x192.png, and /assets/generated/app-icon.dim_512x512.png are precached and served correctly after update."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/pages/RecordDetailsPage.tsx",
+          "path": "frontend/public/sw.js",
           "operation": "modify",
-          "description": "When the viewed record is a Customer, add a “Matching Properties” section that loads locally stored records and filters non-customer properties by the customer’s category (including legacy fallback mapping), excluding records with status “Sold”. Render each match with a Link to the property’s record details page."
+          "description": "Increment CACHE_VERSION (e.g., v3 -> v4) to force cache refresh, and confirm the precache list includes /assets/generated/app-logo.dim_512x512.png, /assets/generated/app-icon.dim_192x192.png, and /assets/generated/app-icon.dim_512x512.png."
         },
         {
-          "path": "frontend/src/hooks/useLocalRepository.ts",
+          "path": "frontend/src/pwa/registerServiceWorker.ts",
           "operation": "modify",
-          "description": "Add (or reuse via existing `useRecords`) a convenient query/hook export pattern to support RecordDetailsPage in reading all records for local matching without duplicating data-fetch logic."
+          "description": "Verify the update flow prompts users to reload when a new service worker is installed so the refreshed cache (including updated branding assets) takes effect promptly."
         }
       ]
     },
     {
       "id": "REQ-3",
-      "summary": "Compute buyer–seller matches from local records and display them as dismissible dashboard alerts persisted locally.",
+      "summary": "Prepare for a production rebuild/redeploy that yields a fresh working icp0.io URL and includes the updated branding + cache busting changes.",
       "acceptanceCriteria": [
-        "Dashboard shows a dedicated “Matches” section listing candidate buyer↔property pairs.",
-        "Matches are computed automatically from locally stored records without manual user action.",
-        "Each match entry includes at least: buyer name/contact, buyer category/budget, property title/owner + price, and quick links to both records.",
-        "A dismissed match no longer appears after dismissal and stays dismissed after refresh/reload (persisted locally)."
+        "A new production URL is produced and opening it in a browser loads the app successfully (no HTTP 400 'Canister ID Not Resolved').",
+        "The production deployment includes the updated branding assets from REQ-1 and the cache-bust changes from REQ-2."
       ],
       "file_operations": [
         {
-          "path": "frontend/src/features/matching/matchEngine.ts",
-          "operation": "create",
-          "description": "Implement frontend-only matching utilities to generate buyer↔property candidate pairs from locally stored records using: customer category ↔ property type mapping, budget/price categorization, and a small set of additional comparable fields (e.g., location/address keywords and area/land size when available)."
-        },
-        {
-          "path": "frontend/src/features/matching/dismissedMatchesStore.ts",
-          "operation": "create",
-          "description": "Add a small local persistence layer (e.g., localStorage-backed) for dismissed match IDs so dismissed matches remain hidden after refresh/reload."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
+          "path": "frontend/DEPLOYMENT.md",
           "operation": "modify",
-          "description": "Add a “Matches” section that automatically computes match candidates from `useRecords()` data, excludes dismissed pairs via the dismissed-matches store, and renders each match with buyer/property summary and quick Links to both records. Provide a Dismiss action that persists dismissal locally."
-        }
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "summary": "Change reminder creation so inputs appear only after clicking an “Add Reminder” button, while preserving existing due-reminder modal behavior.",
-      "acceptanceCriteria": [
-        "Dashboard’s reminder UI does not show date/time/note inputs by default.",
-        "Clicking “Add Reminder” opens a modal (or expands a panel) where the user can enter note, date, and time.",
-        "Submitting saves the reminder using the existing reminder storage flow and clears/closed the UI.",
-        "Due reminders still trigger the existing ReminderModal behavior."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/src/components/AddReminderDialog.tsx",
-          "operation": "create",
-          "description": "Create an “Add Reminder” dialog component that opens on button click, collects note/date/time, validates required fields, and calls an `onSubmit` callback. Use shadcn-ui Dialog (and existing Input/Textarea/Button) for the modal UI; verify the component's usage instructions before implementing."
-        },
-        {
-          "path": "frontend/src/pages/DashboardPage.tsx",
-          "operation": "modify",
-          "description": "Replace the always-visible “Create Reminder” form with a single “Add Reminder” button that opens AddReminderDialog. On submit, save reminders via the existing `useSaveReminder` flow, then close/reset the dialog. Keep the existing due-reminder checking logic and ReminderModal triggering unchanged."
-        }
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "summary": "Add Excel (.xlsx) import/export for the offline local database via browser file pickers in Settings.",
-      "acceptanceCriteria": [
-        "Settings page provides Export to Excel and Import from Excel actions in addition to (or replacing) JSON export/import.",
-        "Export generates an .xlsx file containing the app’s locally stored data (at minimum: records and agents; include other stores if present such as reminders and deals).",
-        "Import accepts an .xlsx file and restores data into local storage (IndexedDB) with validation and error handling (user-visible error messages in English).",
-        "The feature uses browser file pickers for import/export (no silent filesystem writes)."
-      ],
-      "file_operations": [
-        {
-          "path": "frontend/package.json",
-          "operation": "modify",
-          "description": "Add an XLSX read/write library dependency (e.g., SheetJS `xlsx`) required for generating and parsing .xlsx files in the browser."
-        },
-        {
-          "path": "frontend/src/utils/excelIo.ts",
-          "operation": "create",
-          "description": "Implement Excel export/import helpers to (1) build a workbook with separate sheets for records/agents/reminders/deals and (2) parse a workbook back into typed collections with validation and user-friendly error messages."
-        },
-        {
-          "path": "frontend/src/pages/SettingsPage.tsx",
-          "operation": "modify",
-          "description": "Extend Settings → Import/Export to include “Export to Excel (.xlsx)” and “Import from Excel (.xlsx)” using browser download and file input pickers. Export should include at minimum records and agents (and also reminders and deals if present). Import should validate required sheets/columns, show English error toasts on failure, and restore data into IndexedDB via localDb save functions, then refresh UI."
+          "description": "Update the production rebuild/redeploy documentation to explicitly include: rebuilding the frontend, deploying to production, and validating the resulting icp0.io URL loads successfully and reflects updated branding assets + the bumped service worker cache version."
         }
       ]
     }

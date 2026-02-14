@@ -1,117 +1,91 @@
 {
   "kind": "build_request",
-  "title": "Customer category filtering, buyer–seller matching alerts, and button-driven reminder creation (offline local storage + Excel I/O)",
-  "priority": "normal",
+  "title": "Apply uploaded logo to header + PWA icons and redeploy to fix canister link",
+  "priority": "high",
   "requirements": [
     {
       "id": "REQ-1",
-      "text": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
+      "text": "Replace the app’s branding assets with the user-uploaded logo image (IMG_4299-3.jpeg) by regenerating the static PNG files used by the UI and PWA so the new logo appears in the header, browser favicon, and installed PWA icon.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "recent-11"
         ],
         "quotes": [
-          "On customer page change the ‘need’ to Category (Land, House, rental etc show the properties list)",
-          "1. Yes"
+          "Attached/uploaded is the logo",
+          "Main app logo, header and pwa icon."
         ]
       },
       "acceptanceCriteria": [
-        "CustomerForm shows a dropdown labeled “Category” instead of an input labeled “Need”.",
-        "Saving a customer stores the selected category value on the record (and existing records that only have `need` still display a category value via fallback mapping).",
-        "CustomerListPage displays “Category: …” (not “Need: …”) when category is present."
+        "The header logo renders using /assets/generated/app-logo.dim_512x512.png and visually matches the uploaded IMG_4299-3.jpeg.",
+        "The favicon and Apple touch icon reference /assets/generated/app-icon.dim_192x192.png and visually match the uploaded IMG_4299-3.jpeg.",
+        "The web manifest icons (/assets/generated/app-icon.dim_192x192.png and /assets/generated/app-icon.dim_512x512.png) visually match the uploaded IMG_4299-3.jpeg."
       ]
     },
     {
       "id": "REQ-2",
-      "text": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
+      "text": "Force installed PWAs and offline users to receive the updated branding assets by bumping the service worker cache version and ensuring the logo/icon assets remain in the precache list.",
       "target": "frontend",
       "source": {
         "messageIds": [
-          "msg-2"
+          "recent-11"
         ],
         "quotes": [
-          "On customer page change the ‘need’ to Category (Land, House, rental etc show the properties list)"
+          "Main app logo, header and pwa icon."
         ]
       },
       "acceptanceCriteria": [
-        "When viewing a Customer record in RecordDetailsPage, a “Matching Properties” (or equivalent) section appears.",
-        "The list only includes non-customer records whose category matches the customer’s selected Category (and excludes Sold properties unless explicitly required elsewhere).",
-        "Each listed property links to its record details page."
+        "The service worker cache version is incremented so existing clients do not keep using the old cached logo/icon assets.",
+        "/assets/generated/app-logo.dim_512x512.png, /assets/generated/app-icon.dim_192x192.png, and /assets/generated/app-icon.dim_512x512.png are precached and served correctly after update."
       ]
     },
     {
       "id": "REQ-3",
-      "text": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
-      "target": "frontend",
+      "text": "Rebuild and redeploy the application to production to provide a fresh working icp0.io URL that does not return HTTP 400 'Canister ID Not Resolved'.",
+      "target": "unknown",
       "source": {
         "messageIds": [
-          "msg-2"
+          "recent-7",
+          "recent-11"
         ],
         "quotes": [
-          "On excel try to match the buyer and sellers requirements if price categories and few other matches then automatically show on the dashboard, user will dismiss after viewing."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Dashboard shows a dedicated “Matches” section listing candidate buyer↔property pairs.",
-        "Matches are computed automatically from locally stored records without manual user action.",
-        "Each match entry includes at least: buyer name/contact, buyer category/budget, property title/owner + price, and quick links to both records.",
-        "A dismissed match no longer appears after dismissal and stays dismissed after refresh/reload (persisted locally)."
-      ]
-    },
-    {
-      "id": "REQ-4",
-      "text": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-2"
-        ],
-        "quotes": [
-          "The remainder should work on button press, when clicked add remainder then only it should open to select date time and notes.",
+          "Error 400\nCanister ID Not Resolved",
+          "1. Yes",
           "3. Yes"
         ]
       },
       "acceptanceCriteria": [
-        "Dashboard’s reminder UI does not show date/time/note inputs by default.",
-        "Clicking “Add Reminder” opens a modal (or expands a panel) where the user can enter note, date, and time.",
-        "Submitting saves the reminder using the existing reminder storage flow and clears/closed the UI.",
-        "Due reminders still trigger the existing ReminderModal behavior."
-      ]
-    },
-    {
-      "id": "REQ-5",
-      "text": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
-      "target": "frontend",
-      "source": {
-        "messageIds": [
-          "msg-6"
-        ],
-        "quotes": [
-          "No I was this application to use the excel to create its database for the necessary forms and enteries done on the application.",
-          "This is a offline application so all the data should be saved on local pc drive, on settings users should select the drive folder to save all files and data of the application. Data’s should be saved on excel."
-        ]
-      },
-      "acceptanceCriteria": [
-        "Settings page provides Export to Excel and Import from Excel actions in addition to (or replacing) JSON export/import.",
-        "Export generates an .xlsx file containing the app’s locally stored data (at minimum: records and agents; include other stores if present such as reminders and deals).",
-        "Import accepts an .xlsx file and restores data into local storage (IndexedDB) with validation and error handling (user-visible error messages in English).",
-        "The feature uses browser file pickers for import/export (no silent filesystem writes)."
+        "A new production URL is produced and opening it in a browser loads the app successfully (no HTTP 400 'Canister ID Not Resolved').",
+        "The production deployment includes the updated branding assets from REQ-1 and the cache-bust changes from REQ-2."
       ]
     }
   ],
   "constraints": [
-    "Do not modify any files under frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, frontend/src/main.tsx, or frontend/src/components/ui (immutable paths).",
-    "The app cannot create folders or automatically write to a user-selected local drive/folder; any Excel usage must be via user-driven file import/export through the browser.",
-    "Keep all backend logic in the existing single Motoko actor (backend/main.mo) if backend changes are introduced; only add backend changes if strictly required for these features."
+    "Do not modify files under frontend/src/components/ui (read-only UI component sources).",
+    "Do not edit frontend/src/hooks/useInternetIdentity.ts, frontend/src/hooks/useInternetIdentity.tsx, frontend/src/hooks/useActor.ts, or frontend/src/main.tsx (immutable paths).",
+    "Keep backend as a single Motoko actor in backend/main.mo; create backend/migration.mo only if a state upgrade is required."
   ],
   "nonGoals": [
-    "Building a desktop application or implementing true OS-level offline storage to arbitrary local folders/drives.",
-    "Automatic background syncing to Excel files without user download/upload interaction.",
-    "Adding real-time networking features (e.g., WebSockets) for matches or reminders."
+    "Adding new authentication providers (only Internet Identity is supported).",
+    "Changing the app’s data model or adding new CRUD features unrelated to branding or redeploy.",
+    "Implementing real-time features (WebSockets/chat/push notifications)."
   ],
   "imageRequirements": {
     "required": [],
-    "edits": []
+    "edits": [
+      "Replace the existing logo artwork with the user-provided IMG_4299-3.jpeg (app-logo.dim_512x512.png > app-logo.dim_512x512.png)",
+      "Replace the existing app icon artwork with the user-provided IMG_4299-3.jpeg (app-icon.dim_192x192.png > app-icon.dim_192x192.png)",
+      "Replace the existing app icon artwork with the user-provided IMG_4299-3.jpeg (app-icon.dim_512x512.png > app-icon.dim_512x512.png)"
+    ]
+  },
+  "userProfileUpdate": {
+    "goalsToAdd": [],
+    "goalsToRemove": [],
+    "preferencesToAdd": [],
+    "preferencesToRemove": [],
+    "miscToAdd": [],
+    "miscToRemove": [],
+    "fieldsToSet": {},
+    "fieldsToDelete": []
   }
 }

@@ -1,103 +1,66 @@
 {
   "kind": "coverage_report",
   "version": "1.0",
-  "generatedAt": "2026-02-12T23:23:48.237Z",
+  "generatedAt": "2026-02-14T21:41:39.307Z",
   "sources": {
     "buildRequest": true,
     "implementationPlan": true
   },
   "requirements": {
-    "total": 5,
-    "implemented": 5,
+    "total": 3,
+    "implemented": 2,
     "items": [
       {
         "id": "REQ-1",
-        "summary": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
+        "summary": "Replace the app’s branding assets with the user-uploaded logo image (IMG_4299-3.jpeg) by regenerating the static PNG files used by the UI and PWA so the new logo appears in the header, browser favicon, and installed PWA icon.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/utils/customerCategory.ts",
-          "frontend/src/forms/CustomerForm.tsx",
-          "frontend/src/pages/CustomerListPage.tsx"
+          "frontend/public/assets/generated/app-logo.dim_512x512.png",
+          "frontend/public/assets/generated/app-icon.dim_192x192.png",
+          "frontend/public/assets/generated/app-icon.dim_512x512.png",
+          "frontend/src/components/AppHeader.tsx",
+          "frontend/index.html",
+          "frontend/public/manifest.webmanifest"
         ],
         "matchedFiles": [
-          "frontend/src/utils/customerCategory.ts",
-          "frontend/src/forms/CustomerForm.tsx",
-          "frontend/src/pages/CustomerListPage.tsx"
+          "frontend/public/assets/generated/app-logo.dim_512x512.png",
+          "frontend/public/assets/generated/app-icon.dim_192x192.png",
+          "frontend/public/assets/generated/app-icon.dim_512x512.png"
         ]
       },
       {
         "id": "REQ-2",
-        "summary": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
+        "summary": "Force installed PWAs and offline users to receive the updated branding assets by bumping the service worker cache version and ensuring the logo/icon assets remain in the precache list.",
         "status": "implemented",
         "plannedFiles": [
-          "frontend/src/pages/RecordDetailsPage.tsx",
-          "frontend/src/hooks/useLocalRepository.ts"
+          "frontend/public/sw.js",
+          "frontend/src/pwa/registerServiceWorker.ts"
         ],
         "matchedFiles": [
-          "frontend/src/pages/RecordDetailsPage.tsx",
-          "frontend/src/hooks/useLocalRepository.ts"
+          "frontend/public/sw.js"
         ]
       },
       {
         "id": "REQ-3",
-        "summary": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
-        "status": "implemented",
+        "summary": "Rebuild and redeploy the application to production to provide a fresh working icp0.io URL that does not return HTTP 400 'Canister ID Not Resolved'.",
+        "status": "missing",
         "plannedFiles": [
-          "frontend/src/features/matching/matchEngine.ts",
-          "frontend/src/features/matching/dismissedMatchesStore.ts",
-          "frontend/src/pages/DashboardPage.tsx"
+          "frontend/DEPLOYMENT.md"
         ],
-        "matchedFiles": [
-          "frontend/src/features/matching/matchEngine.ts",
-          "frontend/src/features/matching/dismissedMatchesStore.ts",
-          "frontend/src/pages/DashboardPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-4",
-        "summary": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/src/components/AddReminderDialog.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/components/AddReminderDialog.tsx",
-          "frontend/src/pages/DashboardPage.tsx"
-        ]
-      },
-      {
-        "id": "REQ-5",
-        "summary": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
-        "status": "implemented",
-        "plannedFiles": [
-          "frontend/package.json",
-          "frontend/src/utils/excelIo.ts",
-          "frontend/src/pages/SettingsPage.tsx"
-        ],
-        "matchedFiles": [
-          "frontend/src/utils/excelIo.ts",
-          "frontend/src/pages/SettingsPage.tsx"
-        ]
+        "matchedFiles": []
       }
     ]
   },
   "changedFiles": [
+    "backend/main.mo",
     "build-request.json",
     "feature_evidence.json",
     "frontend-file-summaries.txt",
     "frontend-implementation-plan.json",
-    "frontend/src/components/AddReminderDialog.tsx",
-    "frontend/src/features/matching/dismissedMatchesStore.ts",
-    "frontend/src/features/matching/matchEngine.ts",
-    "frontend/src/forms/CustomerForm.tsx",
-    "frontend/src/hooks/useLocalRepository.ts",
-    "frontend/src/pages/CustomerListPage.tsx",
-    "frontend/src/pages/DashboardPage.tsx",
-    "frontend/src/pages/RecordDetailsPage.tsx",
-    "frontend/src/pages/SettingsPage.tsx",
-    "frontend/src/utils/customerCategory.ts",
-    "frontend/src/utils/excelIo.ts",
+    "frontend/public/assets/generated/app-icon.dim_192x192.png",
+    "frontend/public/assets/generated/app-icon.dim_512x512.png",
+    "frontend/public/assets/generated/app-logo.dim_512x512.png",
+    "frontend/public/sw.js",
     "project_state.json",
     "scratch/component-selection.json",
     "spec.md",

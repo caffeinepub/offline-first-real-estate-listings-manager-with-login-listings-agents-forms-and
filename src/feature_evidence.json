@@ -2,13 +2,9 @@
   "kind": "feature_evidence_report",
   "features": [
     {
-      "featureId": "feature-update-the-customer-buyer-form-and-customer-list-ui-to-replace-the-field-labeled-need-with-a-category-dropdown-e-g-land-house-rental-etc-and-persist-the-selected-category-on-the-customer-record-while-preserving-backward-compatibility-with-previously-saved-records-that-used-the-need-field",
-      "featureTitle": "Update the Customer/Buyer form and customer list UI to replace the field labeled “Need” with a “Category” dropdown (e.g., Land, House, Rental, etc.), and persist the selected category on the customer record while preserving backward compatibility with previously saved records that used the `need` field.",
-      "files": [
-        "frontend/src/forms/CustomerForm.tsx",
-        "frontend/src/pages/CustomerListPage.tsx",
-        "frontend/src/utils/customerCategory.ts"
-      ],
+      "featureId": "feature-replace-the-app-s-branding-assets-with-the-user-uploaded-logo-image-img-4299-3-jpeg-by-regenerating-the-static-png-files-used-by-the-ui-and-pwa-so-the-new-logo-appears-in-the-header-browser-favicon-and-installed-pwa-icon",
+      "featureTitle": "Replace the app’s branding assets with the user-uploaded logo image (IMG_4299-3.jpeg) by regenerating the static PNG files used by the UI and PWA so the new logo appears in the header, browser favicon, and installed PWA icon.",
+      "files": [],
       "components": [
         "authorization@4.0.0",
         "blob-storage@4.0.0",
@@ -24,11 +20,10 @@
       "confidence": "high"
     },
     {
-      "featureId": "feature-on-the-customer-record-details-page-display-a-filtered-list-of-property-records-based-on-the-customer-s-selected-category-e-g-land-house-rental-etc-so-the-user-can-view-relevant-properties-for-that-customer",
-      "featureTitle": "On the customer record details page, display a filtered list of property records based on the customer’s selected Category (e.g., Land/House/Rental/etc.), so the user can view relevant properties for that customer.",
+      "featureId": "feature-force-installed-pwas-and-offline-users-to-receive-the-updated-branding-assets-by-bumping-the-service-worker-cache-version-and-ensuring-the-logo-icon-assets-remain-in-the-precache-list",
+      "featureTitle": "Force installed PWAs and offline users to receive the updated branding assets by bumping the service worker cache version and ensuring the logo/icon assets remain in the precache list.",
       "files": [
-        "frontend/src/hooks/useLocalRepository.ts",
-        "frontend/src/pages/RecordDetailsPage.tsx"
+        "frontend/public/sw.js"
       ],
       "components": [
         "authorization@4.0.0",
@@ -41,70 +36,6 @@
       ],
       "testIds": [
         "REQ-2"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-implement-automated-buyer-seller-matching-and-show-matches-as-dismissible-items-on-the-dashboard-compare-customer-buyer-records-against-non-customer-seller-property-records-using-price-budget-category-and-a-small-set-of-additional-comparable-fields-and-keep-showing-newly-found-matches-until-the-user-dismisses-them",
-      "featureTitle": "Implement automated buyer–seller matching and show matches as dismissible items on the Dashboard: compare Customer (buyer) records against non-Customer (seller/property) records using price/budget category and a small set of additional comparable fields, and keep showing newly found matches until the user dismisses them.",
-      "files": [
-        "frontend/src/features/matching/dismissedMatchesStore.ts",
-        "frontend/src/features/matching/matchEngine.ts",
-        "frontend/src/pages/DashboardPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-3"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-change-reminder-creation-so-date-time-notes-entry-only-appears-after-the-user-clicks-an-add-reminder-button-after-saving-the-reminder-is-stored-and-will-trigger-the-existing-due-reminder-modal-at-the-specified-date-time",
-      "featureTitle": "Change reminder creation so date/time/notes entry only appears after the user clicks an “Add Reminder” button; after saving, the reminder is stored and will trigger the existing due-reminder modal at the specified date/time.",
-      "files": [
-        "frontend/src/components/AddReminderDialog.tsx",
-        "frontend/src/pages/DashboardPage.tsx"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-4"
-      ],
-      "confidence": "high"
-    },
-    {
-      "featureId": "feature-add-excel-based-import-export-for-the-local-offline-database-in-settings-so-users-can-use-excel-files-as-the-primary-data-interchange-format-instead-of-only-json-export-import",
-      "featureTitle": "Add Excel-based import/export for the local offline database in Settings, so users can use Excel files as the primary data interchange format instead of only JSON export/import.",
-      "files": [
-        "frontend/src/pages/SettingsPage.tsx",
-        "frontend/src/utils/excelIo.ts"
-      ],
-      "components": [
-        "authorization@4.0.0",
-        "blob-storage@4.0.0",
-        "core-infrastructure@1.0.2",
-        "shadcn-ui@1.0.0",
-        "build-template-react@1.0.0",
-        "initial-app@1.0.0",
-        "github-export-icp-cli@1.0.0"
-      ],
-      "testIds": [
-        "REQ-5"
       ],
       "confidence": "high"
     }

@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { createRouter, RouterProvider, createRoute, createRootRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AuthProvider, useAuth } from './auth/AuthProvider';
+import { registerServiceWorker } from './pwa/registerServiceWorker';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import NewEntryPage from './pages/NewEntryPage';
@@ -116,6 +118,12 @@ declare module '@tanstack/react-router' {
 
 function AppRouter() {
   const { isAuthenticated } = useAuth();
+  
+  useEffect(() => {
+    // Register service worker for offline support
+    registerServiceWorker();
+  }, []);
+
   return <RouterProvider router={router} context={{ isAuthenticated }} />;
 }
 

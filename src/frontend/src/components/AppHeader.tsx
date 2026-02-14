@@ -1,7 +1,7 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { useAuth } from '../auth/AuthProvider';
 import { Button } from '@/components/ui/button';
-import { Building2, LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings } from 'lucide-react';
 import OfflineBanner from './OfflineBanner';
 
 export default function AppHeader() {
@@ -18,9 +18,11 @@ export default function AppHeader() {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-md">
-              <Building2 className="w-6 h-6 text-white" />
-            </div>
+            <img 
+              src="/assets/generated/app-logo.dim_512x512.png" 
+              alt="Vivid Design Tech BTM Logo" 
+              className="w-10 h-10 object-contain"
+            />
             <div>
               <h1 className="text-xl font-bold">Vivid Design Tech BTM</h1>
               <p className="text-xs text-muted-foreground">Property Listings</p>
